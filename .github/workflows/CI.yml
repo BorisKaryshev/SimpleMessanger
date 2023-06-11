@@ -19,10 +19,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install cppcheck
-        uses: aminya/setup-cpp@v1
-        with:
-          cppcheck: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake cppcheck
 
       - name: Run cppcheck
         run: | 
@@ -36,11 +35,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install clang-tidy
-        uses: aminya/setup-cpp@v1
-        with:
-          gcc: true
-          clangtidy: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake clang-tidy
 
       - name: Run clang-tidy
         run: | 
@@ -54,11 +51,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install clang-format
-        uses: aminya/setup-cpp@v1
-        with:
-          gcc: true
-          clangformat: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake clang-format
 
       - name: Run clang-format
         run: | 
@@ -73,10 +68,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install cmake
-        uses: aminya/setup-cpp@v1
-        with:
-          gcc: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake
 
       - name: Build
         run: |
@@ -91,10 +85,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install cmake
-        uses: aminya/setup-cpp@v1
-        with:
-          gcc: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake 
       
       - uses: snickerbockers/submodules-init@v4
 
@@ -111,10 +104,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install cmake
-        uses: aminya/setup-cpp@v1
-        with:
-          gcc: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake 
 
       - uses: snickerbockers/submodules-init@v4
       
@@ -137,10 +129,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install cmake
-        uses: aminya/setup-cpp@v1
-        with:
-          gcc: true
-          cmake: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake 
 
       - uses: snickerbockers/submodules-init@v4
 
@@ -165,10 +156,9 @@ jobs:
       - uses: snickerbockers/submodules-init@v4
 
       - name: Install cmake
-        uses: aminya/setup-cpp@v1
-        with:
-          cmake: true
-          gcovr: true
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake gcovr
 
       - name: Run tests
         run: |
