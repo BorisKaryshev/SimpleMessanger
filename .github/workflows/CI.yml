@@ -116,10 +116,29 @@ jobs:
           cmake --build build -t TESTS_TARGET 
           rm -r build
 
-      - name: Run tests with thread sanitizers 
+  test_with_drd:
+    needs: [ tests ]  
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install cmake
         run: |
-          cmake -DENABLE_TESTING=ON -DENABLE_THREAD_SANITIZERS=ON -S . -B build 
-          cmake --build build -t TESTS_TARGET 
+          sudo apt-get update -y
+          sudo apt-get install g++ cmake 
+
+      - uses: snickerbockers/submodules-init@v4
+
+      - name: Install valgrind
+        run: | 
+          sudo apt-get update -y
+          sudo apt-get install -y valgrind  
+
+      - name: Run DRD
+        run: |
+          cmake -DENABLE_DRD=ON -S . -B build 
+          cmake --build build -t TESTS_TARGET
 
   test_with_valgrind:
     needs: [ tests ]  
@@ -142,11 +161,11 @@ jobs:
 
       - name: Run valgrind
         run: |
-          cmake -DENABLE_TESTING=ON -S . -B build 
-          cmake --build build -t VALGRIND_TARGET
+          cmake -DENABLE_VALGRIND=ON -S . -B build 
+          cmake --build build -t TESTS_TARGET
 
   coverage_report:
-    needs: [ test_with_valgrind, test_with_sanitizers ]
+    needs: [ test_with_valgrind, test_with_sanitizers, test_with_drd ]
     runs-on: ubuntu-22.04
 
     permissions: write-all
