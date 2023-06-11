@@ -42,15 +42,16 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
-
+    ${PROJECT_SOURCE_DIR}/src/SampleSource.cpp
 )
 
 set(include_locations
-
+    ${PROJECT_SOURCE_DIR}/include
 )
 
 set(includes 
-
+    ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
+    ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
