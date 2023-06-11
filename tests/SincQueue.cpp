@@ -1,5 +1,8 @@
+#include "SincQueue.hpp"
+
 #include <gtest/gtest.h>
 
-TEST(SampleTest, first) {
+TEST(SingleThread, AppendOrder) {
+    Threads::SincQueue<int> queue;
     ASSERT_TRUE(true);
 }
