@@ -19,8 +19,8 @@ namespace Threads {
         ~SincQueue() = default;
 
      private:
-        std::mutex m_mutex;
-        std::condition_variable m_condVariable;
+        mutable std::mutex m_mutex;
+        mutable std::condition_variable m_condVariable;
 
         std::queue<T> m_queue;
     };
