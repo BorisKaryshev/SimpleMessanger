@@ -19,18 +19,9 @@ else()
 endif()
 
 if(ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=address -fsanitize=leak)
-    add_link_options(-fsanitize=address -fsanitize=leak)
-endif()
+    add_compile_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
+    add_link_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
 
-if(ENABLE_THREAD_SANITIZERS)
-    add_compile_options(-fsanitize=thread -fsanitize=undefined)
-    add_link_options(-fsanitize=thread -fsanitize=undefined)
-endif()
-
-if(ENABLE_THREAD_SANITIZERS OR ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=undefined)
-    add_link_options(-fsanitize=undefined)
 endif()
 
 if(ENABLE_COVERAGE)
@@ -56,8 +47,9 @@ set(includes
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
+find_package (Threads)
 set(libs 
-
+    ${CMAKE_THREAD_LIBS_INIT}
 )
 
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
@@ -119,7 +111,7 @@ if(ENABLE_CPPCHECK)
     )
 endif()
 
-if(ENABLE_COVERAGE OR ENABLE_TESTING)
+if(ENABLE_COVERAGE OR ENABLE_TESTING OR ENABLE_VALGRIND OR ENABLE_DRD)
     enable_testing()
     add_subdirectory(googletest)
     add_subdirectory(${tests_folder})
@@ -132,19 +124,6 @@ if(ENABLE_COVERAGE OR ENABLE_TESTING)
         --test-dir ${PROJECT_BINARY_DIR}
         DEPENDS tests_list_target ${libs_names}
     )
-
-
-    if(ENABLE_TESTING)
-        find_program(VALGRIND "valgrind")
-        add_custom_target(
-            VALGRIND_TARGET ALL
-            COMMAND valgrind
-            --leak-check=full
-            -s
-            make -C ${PROJECT_BINARY_DIR}/tests test
-            DEPENDS tests_list_target ${libs_names}
-        )
-    endif()
 endif()
 
 if(ENABLE_COVERAGE)
