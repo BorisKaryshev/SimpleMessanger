@@ -9,7 +9,7 @@ namespace Threads {
     template <typename T>
     class SincQueue {
      public:
-        explicit SincQueue(const T& defaultValue = T{});
+        explicit SincQueue();
 
         auto push(const T& element) -> void;
         [[nodiscard]] auto pop() -> T;

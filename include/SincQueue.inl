@@ -3,7 +3,7 @@
 namespace Threads {
 
     template <typename T>
-    SincQueue<T>::SincQueue(const T& defaultValue) : m_defaultValueToBeReturned{defaultValue} {}
+    SincQueue<T>::SincQueue() {}
 
     template <typename T>
     auto SincQueue<T>::push(const T& element) -> void {
