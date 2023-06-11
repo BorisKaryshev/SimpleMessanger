@@ -18,7 +18,6 @@ else()
     message(FATAL_ERROR "Unknow build mode")
 endif()
 
-
 if(ENABLE_MEMORY_SANITIZERS)
     add_compile_options(-fsanitize=address -fsanitize=leak)
     add_link_options(-fsanitize=address -fsanitize=leak)
@@ -56,13 +55,17 @@ set(includes
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
+set(libs 
+
+)
+
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 add_custom_target(EXE_TARGET DEPENDS exe)
 
 add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
-target_link_libraries(exe ${project_name}_lib)
+target_link_libraries(exe ${project_name}_lib ${libs})
 
 if(ENABLE_CLANG_TIDY) 
     find_program(CLANG_TIDY "clang-tidy-15")
