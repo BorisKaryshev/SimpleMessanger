@@ -69,7 +69,7 @@ target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(exe ${project_name}_lib ${libs})
 
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy-15")
+    find_program(CLANG_TIDY "clang-tidy")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
