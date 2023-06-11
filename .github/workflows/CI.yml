@@ -1,0 +1,210 @@
+name: CI
+
+on:
+  push: 
+    branches:
+      - '*'
+      - '*/*'
+      - '**' 
+      - '!main'
+
+env:
+  BUILD_TYPE: Debug
+
+jobs:    
+  cppcheck:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install cppcheck
+        uses: aminya/setup-cpp@v1
+        with:
+          cppcheck: true
+          cmake: true
+
+      - name: Run cppcheck
+        run: | 
+          cmake -DENABLE_CPPCHECK=ON -S . -B build
+          cmake --build build -t CPPCHECK_TARGET
+  
+  clang-tidy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install clang-tidy
+        uses: aminya/setup-cpp@v1
+        with:
+          gcc: true
+          clangtidy: true
+          cmake: true
+
+      - name: Run clang-tidy
+        run: | 
+          cmake -DENABLE_CLANG_TIDY=ON -S . -B build
+          cmake --build build -t TIDY_TARGET
+
+  clang-format:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install clang-format
+        uses: aminya/setup-cpp@v1
+        with:
+          gcc: true
+          clangformat: true
+          cmake: true
+
+      - name: Run clang-format
+        run: | 
+          cmake -DENABLE_CLANG_FORMAT=ON -S . -B build
+          cmake --build build -t FORMAT_CHECK_TARGET
+
+  build:
+    needs: [ cppcheck, clang-tidy, clang-format ]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install cmake
+        uses: aminya/setup-cpp@v1
+        with:
+          gcc: true
+          cmake: true
+
+      - name: Build
+        run: |
+          cmake  -S . -B build 
+          cmake --build build -t EXE_TARGET
+      
+  tests:
+    needs: [ build ]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install cmake
+        uses: aminya/setup-cpp@v1
+        with:
+          gcc: true
+          cmake: true
+      
+      - uses: snickerbockers/submodules-init@v4
+
+      - name: Build
+        run: |
+          cmake  -DENABLE_TESTING=ON -S . -B build 
+          cmake --build build -t TESTS_TARGET
+
+  test_with_sanitizers:
+    needs: [ tests ]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install cmake
+        uses: aminya/setup-cpp@v1
+        with:
+          gcc: true
+          cmake: true
+
+      - uses: snickerbockers/submodules-init@v4
+      
+      - name: Run tests with memory sanitizers 
+        run: |
+          cmake -DENABLE_TESTING=ON -DENABLE_MEMORY_SANITIZERS=ON -S . -B build 
+          cmake --build build -t TESTS_TARGET 
+          rm -r build
+
+      - name: Run tests with thread sanitizers 
+        run: |
+          cmake -DENABLE_TESTING=ON -DENABLE_THREAD_SANITIZERS=ON -S . -B build 
+          cmake --build build -t TESTS_TARGET 
+
+  test_with_valgrind:
+    needs: [ tests ]  
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install cmake
+        uses: aminya/setup-cpp@v1
+        with:
+          gcc: true
+          cmake: true
+
+      - uses: snickerbockers/submodules-init@v4
+
+      - name: Install valgrind
+        run: | 
+          sudo apt-get update -y
+          sudo apt-get install -y valgrind  
+
+      - name: Run valgrind
+        run: |
+          cmake -DENABLE_TESTING=ON -S . -B build 
+          cmake --build build -t VALGRIND_TARGET
+
+  coverage_report:
+    needs: [ test_with_valgrind, test_with_sanitizers ]
+    runs-on: ubuntu-22.04
+
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
+
+      - name: Install cmake
+        uses: aminya/setup-cpp@v1
+        with:
+          cmake: true
+          gcovr: true
+
+      - name: Run tests
+        run: |
+          cmake  -DENABLE_COVERAGE=ON -S . -B build 
+          cmake --build build -t TESTS_TARGET
+
+      - name: Generate detailed code coverage report
+        run: |
+          mkdir -p coverage_report
+          gcovr --exclude "googletest|tests|src/main.cpp" --exclude-throw-branches --xml ./coverage_report/coverage.xml
+      
+      - name: Generate coverage report for PR comment
+        run: gcovr --exclude "googletest|tests|src/main.cpp" --exclude-throw-branches --html-details coverage_report/main.html
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Code_coverage_report
+          path: coverage_report 
+              
+      - name: Code Coverage Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: ./coverage_report/coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: false
+          indicators: true
+          output: both
+          thresholds: '70 90'
+
+      - uses: jwalton/gh-find-current-pr@v1
+        id: finder
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ steps.finder.outputs.pr }}
+          recreate: true
+          path: code-coverage-results.md
