@@ -75,10 +75,10 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 if(ENABLE_CLANG_FORMAT)
-    find_program(CLANG_FORMAT "clang-format")
+    find_program(CLANG_FORMAT "clang-format-15")
     add_custom_target(
         FORMAT_CHECK_TARGET ALL
-        COMMAND clang-format
+        COMMAND ${CLANG_FORMAT}
         --dry-run
         --Werror
         -style=file:${PROJECT_SOURCE_DIR}/configs/.clang-format
@@ -89,7 +89,7 @@ if(ENABLE_CLANG_FORMAT)
 
     add_custom_target(
         FORMAT_TARGET ALL
-        COMMAND clang-format
+        COMMAND ${CLANG_FORMAT}
         -i
         --Werror
         -style=file:${PROJECT_SOURCE_DIR}/configs/.clang-format
