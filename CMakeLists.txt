@@ -8,7 +8,7 @@ if(NOT DEFINED BUILD_MODE)
 endif()
 
 project(${project_name})
-add_compile_options(-Wall -Wextra -Werror -Wpedantic)
+add_compile_options(-Wall -Wextra -Werror -Wpedantic -pthread)
 
 if(${BUILD_MODE} STREQUAL "DEBUG")
     add_compile_options(-g -O0)
