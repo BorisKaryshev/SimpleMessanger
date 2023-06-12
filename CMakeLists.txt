@@ -8,7 +8,7 @@ if(NOT DEFINED BUILD_MODE)
 endif()
 
 project(${project_name})
-add_compile_options(-Wall -Wextra -Werror -Wpedantic -pthread)
+add_compile_options(-Wall -Wextra -Werror -Wpedantic -pie -fpie -pthread)
 
 if(${BUILD_MODE} STREQUAL "DEBUG")
     add_compile_options(-g -O0)
@@ -19,18 +19,13 @@ else()
 endif()
 
 if(ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=address -fsanitize=leak)
-    add_link_options(-fsanitize=address -fsanitize=leak)
+    add_compile_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
+    add_link_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
 endif()
 
 if(ENABLE_THREAD_SANITIZERS)
-    add_compile_options(-fsanitize=thread -fsanitize=undefined)
-    add_link_options(-fsanitize=thread -fsanitize=undefined)
-endif()
-
-if(ENABLE_THREAD_SANITIZERS OR ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=undefined)
-    add_link_options(-fsanitize=undefined)
+    add_compile_options(-fsanitize=thread)
+    add_link_options(-fsanitize=thread)
 endif()
 
 if(ENABLE_COVERAGE)
