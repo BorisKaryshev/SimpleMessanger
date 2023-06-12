@@ -42,15 +42,15 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
-
+    ${PROJECT_SOURCE_DIR}/src/Executor.cpp
 )
 
 set(include_locations
-
+    ${PROJECT_SOURCE_DIR}/include
 )
 
 set(includes 
-
+    ${PROJECT_SOURCE_DIR}/include/Executor.hpp
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
