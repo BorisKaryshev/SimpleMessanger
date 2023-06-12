@@ -8,7 +8,7 @@ if(NOT DEFINED BUILD_MODE)
 endif()
 
 project(${project_name})
-add_compile_options(-Wall -Wextra -Werror -Wpedantic)
+add_compile_options(-Wall -Wextra -Werror -Wpedantic -pthread)
 
 if(${BUILD_MODE} STREQUAL "DEBUG")
     add_compile_options(-g -O0)
@@ -19,9 +19,18 @@ else()
 endif()
 
 if(ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
-    add_link_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
+    add_compile_options(-fsanitize=address -fsanitize=leak)
+    add_link_options(-fsanitize=address -fsanitize=leak)
+endif()
 
+if(ENABLE_THREAD_SANITIZERS)
+    add_compile_options(-fsanitize=thread -fsanitize=undefined)
+    add_link_options(-fsanitize=thread -fsanitize=undefined)
+endif()
+
+if(ENABLE_THREAD_SANITIZERS OR ENABLE_MEMORY_SANITIZERS)
+    add_compile_options(-fsanitize=undefined)
+    add_link_options(-fsanitize=undefined)
 endif()
 
 if(ENABLE_COVERAGE)
@@ -33,23 +42,21 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
-    ${PROJECT_SOURCE_DIR}/src/SampleSource.cpp
+
 )
 
 set(include_locations
-    ${PROJECT_SOURCE_DIR}/include
+
 )
 
 set(includes 
-    ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
-    ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
+
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
-find_package (Threads)
 set(libs 
-    ${CMAKE_THREAD_LIBS_INIT}
+
 )
 
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
@@ -61,7 +68,7 @@ target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(exe ${project_name}_lib ${libs})
 
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy")
+    find_program(CLANG_TIDY "clang-tidy-15")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
@@ -111,7 +118,7 @@ if(ENABLE_CPPCHECK)
     )
 endif()
 
-if(ENABLE_COVERAGE OR ENABLE_TESTING OR ENABLE_VALGRIND OR ENABLE_DRD)
+if(ENABLE_COVERAGE OR ENABLE_TESTING)
     enable_testing()
     add_subdirectory(googletest)
     add_subdirectory(${tests_folder})
@@ -124,8 +131,21 @@ if(ENABLE_COVERAGE OR ENABLE_TESTING OR ENABLE_VALGRIND OR ENABLE_DRD)
         --test-dir ${PROJECT_BINARY_DIR}
         DEPENDS tests_list_target ${libs_names}
     )
+
+
+    if(ENABLE_TESTING)
+        find_program(VALGRIND "valgrind")
+        add_custom_target(
+            VALGRIND_TARGET ALL
+            COMMAND valgrind
+            --leak-check=full
+            -s
+            make -C ${PROJECT_BINARY_DIR}/tests test
+            DEPENDS tests_list_target ${libs_names}
+        )
+    endif()
 endif()
 
 if(ENABLE_COVERAGE)
-    target_link_libraries(exe gcov)
+    target_link_libraries(${project_name} gcov)
 endif()
