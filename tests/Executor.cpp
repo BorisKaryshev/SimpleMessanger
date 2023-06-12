@@ -14,10 +14,8 @@ TEST(Executor, Correct) {
 
     auto task = [&values, &valuesMutex] {
         for (std::size_t i = 0; i < size; ++i) {
-            {
-                std::lock_guard lock{valuesMutex};
-                ++values[i];
-            }
+            std::lock_guard lock{valuesMutex};
+            ++values[i];
         }
     };
 
