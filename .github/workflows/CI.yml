@@ -17,7 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      - uses: snickerbockers/submodules-init@v4
+      
       - name: Install cppcheck
         run: |
           sudo apt-get update -y
@@ -33,6 +34,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
 
       - name: Install clang-tidy
         run: |
@@ -49,6 +51,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
 
       - name: Install clang-format
         run: |
@@ -66,6 +69,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
 
       - name: Install cmake
         run: |
