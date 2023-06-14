@@ -8,15 +8,6 @@ if(NOT DEFINED BUILD_MODE)
 endif()
 
 project(${project_name})
-add_compile_options(-Wall -Wextra -Werror -Wpedantic -pthread)
-
-if(${BUILD_MODE} STREQUAL "DEBUG")
-    add_compile_options(-g -O0)
-elseif(${BUILD_MODE} STREQUAL "RELEASE")
-    add_compile_options(-O2)
-else()
-    message(FATAL_ERROR "Unknow build mode")
-endif()
 
 if(ENABLE_MEMORY_SANITIZERS)
     add_compile_options(-fsanitize=address -fsanitize=leak)
@@ -42,21 +33,24 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
-
+    ${PROJECT_SOURCE_DIR}/src/Message.cpp
 )
 
 set(include_locations
-
+    ${PROJECT_SOURCE_DIR}/include
 )
 
 set(includes 
-
+    ${PROJECT_SOURCE_DIR}/include/Message.hpp
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
 set(libs 
-
+    Boost::serialization
+)
+add_subdirectory(
+    ${PROJECT_SOURCE_DIR}/libs/partial_boost
 )
 
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
@@ -67,8 +61,23 @@ add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(exe ${project_name}_lib ${libs})
 
+#target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
+target_compile_options(${project_name}_lib PRIVATE  -Wall -Wextra -Werror -Wpedantic -pthread)
+
+
+if(${BUILD_MODE} STREQUAL "DEBUG")
+    target_compile_options(exe PRIVATE  -g -O0)
+    target_compile_options(${project_name}_lib PRIVATE  -g -O0)
+elseif(${BUILD_MODE} STREQUAL "RELEASE")
+    target_compile_options(exe PRIVATE  -O2)
+    target_compile_options(${project_name}_lib PRIVATE  -O2)
+else()
+    message(FATAL_ERROR "Unknow build mode")
+endif()
+
+
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy-15")
+    find_program(CLANG_TIDY "clang-tidy")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
