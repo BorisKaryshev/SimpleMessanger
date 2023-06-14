@@ -61,7 +61,7 @@ add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(exe ${project_name}_lib ${libs})
 
-#target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
+target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
 target_compile_options(${project_name}_lib PRIVATE  -Wall -Wextra -Werror -Wpedantic -pthread)
 
 

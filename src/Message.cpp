@@ -7,8 +7,10 @@
 
 namespace SiM {
 
-    Message::Message(Message::IdType id, std::string from, std::string to, std::string text)
-        : m_messageId(id), m_from(from), m_to(to), m_text(text) {}
+    Message::Message(Message::IdType messageId, std::string loginFrom, std::string loginTo, std::string text)
+        : m_messageId(messageId), m_from(std::move(loginFrom)), m_to(std::move(loginTo)), m_text(std::move(text)) {
+        [[maybe_unused]] auto tmp = serialize();
+    }
 
     [[nodiscard]] auto Message::id() const noexcept -> const IdType& {
         return m_messageId;
@@ -28,15 +30,11 @@ namespace SiM {
 
     namespace {}  // namespace
 
-    Message::Message(const std::string& serializedString) {
-        std::stringstream stream(serializedString);
-
-        Message m;
+    Message::Message(const std::string& serializedString) : m_serializedMessage(serializedString) {
+        std::stringstream stream(m_serializedMessage);
 
         boost::archive::text_iarchive inArchive(stream);
-        inArchive >> m;
-
-        std::swap(*this, m);
+        inArchive >> *this;
     }
 
     [[nodiscard]] auto Message::serialize() const -> const std::string& {
@@ -51,8 +49,5 @@ namespace SiM {
 
         return m_serializedMessage;
     }
-
-    // without static fields 3934 ms
-    // with static fields
 
 }  // namespace SiM

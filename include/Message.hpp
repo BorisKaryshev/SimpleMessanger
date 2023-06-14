@@ -15,7 +15,7 @@ namespace SiM {
 
         explicit Message(const std::string& serializedString);
 
-        explicit Message(IdType id, std::string from, std::string to, std::string text);
+        explicit Message(IdType messageI, std::string loginFrom, std::string loginTo, std::string text);
 
         [[nodiscard]] auto id() const noexcept -> const IdType&;
         [[nodiscard]] auto from() const noexcept -> const std::string&;
@@ -24,7 +24,7 @@ namespace SiM {
 
         [[nodiscard]] auto serialize() const -> const std::string&;
 
-        friend auto operator<=>(const Message&, const Message&) noexcept = default;
+        friend auto operator<=>(const Message& lhs, const Message& rhs) noexcept = default;
 
      private:
         friend class boost::serialization::access;
@@ -45,7 +45,5 @@ namespace SiM {
 
         mutable std::string m_serializedMessage;
     };
-
-    [[nodiscard]] auto serializeMessage(const Message& message) -> std::string;
 
 }  // namespace SiM
