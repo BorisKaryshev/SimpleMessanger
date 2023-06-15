@@ -6,6 +6,12 @@
 
 namespace SiM {
 
+    /**
+     * @brief Container for basic message info with serialization support
+     *
+     * @details Fields are immutable although, they can be modified via serialization.
+     * So class is thread safe except it construction/destruction and serialization.
+     */
     class Message {
      public:
         using IdType = unsigned long long;
