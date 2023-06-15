@@ -157,5 +157,5 @@ if(ENABLE_COVERAGE OR ENABLE_TESTING)
 endif()
 
 if(ENABLE_COVERAGE)
-    target_link_libraries(${project_name} gcov)
+    target_link_libraries(${project_name}_lib gcov)
 endif()
