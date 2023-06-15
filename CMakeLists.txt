@@ -78,7 +78,7 @@ endif()
 
 
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy-15")
+    find_program(CLANG_TIDY "clang-tidy")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
