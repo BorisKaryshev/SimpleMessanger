@@ -13,7 +13,7 @@ namespace SiM {
      public:
         explicit Message() = default;
 
-        explicit Message(const std::string& serializedString);
+        explicit Message(std::string serializedString);
 
         explicit Message(IdType messageI, std::string loginFrom, std::string loginTo, std::string text);
 
@@ -30,12 +30,7 @@ namespace SiM {
         friend class boost::serialization::access;
 
         template <typename Archive>
-        auto serialize(Archive& arh, [[maybe_unused]] const unsigned int version) -> void {
-            arh& m_messageId;
-            arh& m_from;
-            arh& m_to;
-            arh& m_text;
-        }
+        auto serialize(Archive& arh, [[maybe_unused]] const unsigned int version) -> void;
 
      private:
         IdType m_messageId{};
@@ -45,5 +40,13 @@ namespace SiM {
 
         mutable std::string m_serializedMessage;
     };
+
+    template <typename Archive>
+    inline auto Message::serialize(Archive& arh, [[maybe_unused]] const unsigned int version) -> void {
+        arh& m_messageId;
+        arh& m_from;
+        arh& m_to;
+        arh& m_text;
+    }
 
 }  // namespace SiM

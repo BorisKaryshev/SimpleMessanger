@@ -28,9 +28,7 @@ namespace SiM {
         return m_text;
     }
 
-    namespace {}  // namespace
-
-    Message::Message(const std::string& serializedString) : m_serializedMessage(serializedString) {
+    Message::Message(std::string serializedString) : m_serializedMessage(std::move(serializedString)) {
         std::stringstream stream(m_serializedMessage);
 
         boost::archive::text_iarchive inArchive(stream);

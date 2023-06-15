@@ -59,7 +59,8 @@ add_custom_target(EXE_TARGET DEPENDS exe)
 
 add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
-target_link_libraries(exe ${project_name}_lib ${libs})
+target_link_libraries(${project_name}_lib ${libs})
+target_link_libraries(exe ${project_name}_lib)
 
 target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
 target_compile_options(${project_name}_lib PRIVATE  -Wall -Wextra -Werror -Wpedantic -pthread)
@@ -77,7 +78,7 @@ endif()
 
 
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy")
+    find_program(CLANG_TIDY "clang-tidy-15")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
