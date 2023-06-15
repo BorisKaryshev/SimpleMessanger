@@ -172,10 +172,10 @@ jobs:
       - name: Generate detailed code coverage report
         run: |
           mkdir -p coverage_report
-          gcovr --exclude "googletest|tests|src/main.cpp" --exclude-throw-branches --xml ./coverage_report/coverage.xml
+          gcovr --exclude "googletest|tests|src/main.cpp|libs" --exclude-throw-branches --xml ./coverage_report/coverage.xml
       
       - name: Generate coverage report for PR comment
-        run: gcovr --exclude "googletest|tests|src/main.cpp" --exclude-throw-branches --html-details coverage_report/main.html
+        run: gcovr --exclude "googletest|tests|src/main.cpp|libs" --exclude-throw-branches --html-details coverage_report/main.html
 
       - uses: actions/upload-artifact@v3
         with:
