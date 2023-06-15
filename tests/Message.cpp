@@ -30,9 +30,10 @@ TEST(SerializeDeserialize, emptyMessage) {
 TEST(MultipleThreads, Correct) {
     SiM::Message message(1, "Bob"s, "Mark"s, "Hello, Mark! This is Bob"s);
 
-    auto helper = [](const std::string serializedMessage) -> SiM::Message { return SiM::Message(serializedMessage); };
+    SiM::Message result;
+    auto helper = [&result](const std::string& serializedMessage) -> void { result = SiM::Message(serializedMessage); };
+    std::thread thread(helper, message.serialize());
+    thread.join();
 
-    auto result = std::async(std::launch::async, helper, message.serialize());
-
-    ASSERT_EQ(message, result.get());
+    ASSERT_EQ(message, result);
 }
