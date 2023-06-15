@@ -2,22 +2,37 @@
 
 #include <gtest/gtest.h>
 
+#include <future>
 #include <iostream>
+#include <mutex>
+#include <thread>
 
 using namespace std::string_literals;
 
-auto operator<<(std::ostream& stream, const SiM::Message& message) -> std::ostream& {
-    return stream << message.id() << ' ' << message.from() << " " << message.to() << " " << message.text();
-}
+TEST(SerializeDeserialize, Correct) {
+    SiM::Message message(1, "Bob"s, "Mark"s, "Hello, Mark! This is Bob"s);
 
-TEST(SerializeDeserialize, firstCorrect) {
-    SiM::Message message(1, "Bob"s, "Mark"s, "Hello"s);
-
-    auto serialized = message.serialize();
-
+    const auto serialized = message.serialize();
     SiM::Message deserializedMessage(serialized);
 
-    std::cout << message << "\n" << deserializedMessage << "\n";
-    std::cout << std::boolalpha << (message == deserializedMessage) << "\n";
     ASSERT_EQ(message, deserializedMessage);
+}
+
+TEST(SerializeDeserialize, emptyMessage) {
+    SiM::Message message;
+
+    const auto serialized = message.serialize();
+    SiM::Message deserializedMessage(serialized);
+
+    ASSERT_EQ(message, deserializedMessage);
+}
+
+TEST(MultipleThreads, Correct) {
+    SiM::Message message(1, "Bob"s, "Mark"s, "Hello, Mark! This is Bob"s);
+
+    auto helper = [](const std::string serializedMessage) -> SiM::Message { return SiM::Message(serializedMessage); };
+
+    auto result = std::async(std::launch::async, helper, message.serialize());
+
+    ASSERT_EQ(message, result.get());
 }
