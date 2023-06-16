@@ -55,8 +55,10 @@ set(includes
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
-set(libs 
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/partial_boost)
 
+set(libs 
+    Boost::asio
 )
 
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
