@@ -11,8 +11,14 @@
 
 namespace Threads {
 
+    /**
+     * @brief Thread pool. Contains some amount of threads, and execute tasks in them.
+     */
     class Executor {
      public:
+        /**
+         * @param numOfThreads Number of threads to be created in Executor.
+         */
         explicit Executor(std::size_t numOfThreads = 1);
         ~Executor();
 
@@ -22,6 +28,9 @@ namespace Threads {
             m_addTask(std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
         }
 
+        /**
+         * @brief Stops accepting new tasks, thus stopping Executor. Tasks which have been added before stop will be executed.
+         */
         auto stop() -> void;
 
      private:
