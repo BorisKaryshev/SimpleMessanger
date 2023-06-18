@@ -1,4 +1,11 @@
 cmake_minimum_required(VERSION 3.9)
+
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/cpp-pm/hunter/archive/v0.24.18.tar.gz"
+    SHA1 "1292e4d661e1770d6d6ca08c12c07cf34a0bf718"
+)
+
 set(CMAKE_CXX_STANDARD 20)
 
 set(project_name SiM)
@@ -46,11 +53,10 @@ set(includes
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
+hunter_add_package(Boost COMPONENTS serialization)
+find_package(Boost CONFIG REQUIRED serialization)
 set(libs 
     Boost::serialization
-)
-add_subdirectory(
-    ${PROJECT_SOURCE_DIR}/libs/partial_boost
 )
 
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
