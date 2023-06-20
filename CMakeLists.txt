@@ -1,4 +1,11 @@
 cmake_minimum_required(VERSION 3.9)
+
+include("gate/cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/cpp-pm/hunter/archive/v0.24.18.tar.gz"
+    SHA1 "1292e4d661e1770d6d6ca08c12c07cf34a0bf718"
+)
+
 set(CMAKE_CXX_STANDARD 20)
 
 set(project_name SiM)
@@ -8,15 +15,6 @@ if(NOT DEFINED BUILD_MODE)
 endif()
 
 project(${project_name})
-add_compile_options(-Wall -Wextra -Werror -Wpedantic -pthread)
-
-if(${BUILD_MODE} STREQUAL "DEBUG")
-    add_compile_options(-g -O0)
-elseif(${BUILD_MODE} STREQUAL "RELEASE")
-    add_compile_options(-O2)
-else()
-    message(FATAL_ERROR "Unknow build mode")
-endif()
 
 if(ENABLE_MEMORY_SANITIZERS)
     add_compile_options(-fsanitize=address -fsanitize=leak)
@@ -55,10 +53,14 @@ set(includes
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/partial_boost)
+hunter_add_package(asio)
+hunter_add_package(Boost COMPONENTS thread)
 
+find_package(Boost CONFIG REQUIRED thread)
+find_package(asio CONFIG REQUIRED)
 set(libs 
-    Boost::asio
+    asio::asio_shared
+    Boost::thread
 )
 
 add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
@@ -67,10 +69,26 @@ add_custom_target(EXE_TARGET DEPENDS exe)
 
 add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
-target_link_libraries(exe ${project_name}_lib ${libs})
+target_link_libraries(${project_name}_lib ${libs})
+target_link_libraries(exe ${project_name}_lib)
+
+target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
+target_compile_options(${project_name}_lib PRIVATE  -Wall -Wextra -Werror -Wpedantic -pthread)
+
+
+if(${BUILD_MODE} STREQUAL "DEBUG")
+    target_compile_options(exe PRIVATE  -g -O0)
+    target_compile_options(${project_name}_lib PRIVATE  -g -O0)
+elseif(${BUILD_MODE} STREQUAL "RELEASE")
+    target_compile_options(exe PRIVATE  -O2)
+    target_compile_options(${project_name}_lib PRIVATE  -O2)
+else()
+    message(FATAL_ERROR "Unknow build mode")
+endif()
+
 
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy-15")
+    find_program(CLANG_TIDY "clang-tidy")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
@@ -149,5 +167,5 @@ if(ENABLE_COVERAGE OR ENABLE_TESTING)
 endif()
 
 if(ENABLE_COVERAGE)
-    target_link_libraries(${project_name} gcov)
+    target_link_libraries(${project_name}_lib gcov)
 endif()
