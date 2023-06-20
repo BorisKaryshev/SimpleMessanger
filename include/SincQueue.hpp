@@ -2,25 +2,36 @@
 
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <queue>
 
 namespace Threads {
 
     template <typename T>
-    class SincQueue {
+    class AsyncQueue {
      public:
-        explicit SincQueue();
+        explicit AsyncQueue() = default;
+
+        AsyncQueue(const AsyncQueue&) = delete;
+        auto operator=(const AsyncQueue&) -> AsyncQueue& = delete;
 
         auto push(const T& element) -> void;
+
+        /**
+         * @brief Get element from queue. If queue is empty wait until element appears.
+         */
         [[nodiscard]] auto pop() -> T;
 
-        [[nodiscard]] auto empty() const -> bool;
+        /**
+         * @brief Get element if queue is not empty. Wont wait until element appearance.
+         */
+        [[nodiscard]] auto tryPop() -> std::optional<T>;
 
-        ~SincQueue() = default;
+        ~AsyncQueue() = default;
 
      private:
-        mutable std::mutex m_mutex;
-        mutable std::condition_variable m_condVariable;
+        mutable std::mutex m_queueMutex;
+        mutable std::condition_variable m_queueCondVariable;
 
         std::queue<T> m_queue;
     };

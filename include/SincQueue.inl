@@ -3,36 +3,34 @@
 namespace Threads {
 
     template <typename T>
-    SincQueue<T>::SincQueue() {}
-
-    template <typename T>
-    auto SincQueue<T>::push(const T& element) -> void {
+    inline auto AsyncQueue<T>::push(const T& element) -> void {
         {
-            std::lock_guard lock{m_mutex};
+            std::lock_guard lock{m_queueMutex};
             m_queue.push(element);
         }
-        m_condVariable.notify_one();
+        m_queueCondVariable.notify_one();
     }
 
     template <typename T>
-    auto SincQueue<T>::pop() -> T {
-        T tmp;
-        {
-            std::unique_lock lock{m_mutex};
+    [[nodiscard]] inline auto AsyncQueue<T>::pop() -> T {
+        std::unique_lock lock{m_queueMutex};
+        m_queueCondVariable.wait(lock, [this] { return !m_queue.empty(); });
 
-            m_condVariable.wait(lock, [this] { return !m_queue.empty(); });
-
-            tmp = m_queue.front();
-            m_queue.pop();
-        }
+        T tmp = m_queue.front();
+        m_queue.pop();
 
         return tmp;
     }
 
     template <typename T>
-    auto SincQueue<T>::empty() const -> bool {
-        std::lock_guard lock{m_mutex};
-        return m_queue.empty();
+    [[nodiscard]] inline auto AsyncQueue<T>::tryPop() -> std::optional<T> {
+        std::lock_guard lock(m_queueMutex);
+        if (m_queue.empty()) {
+            return std::nullopt;
+        }
+        T tmp = m_queue.front();
+        m_queue.pop();
+        return tmp;
     }
 
 }  // namespace Threads

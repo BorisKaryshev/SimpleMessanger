@@ -8,7 +8,7 @@
 
 TEST(SingleThread, AppendOrder) {
     constexpr int size = 500;
-    Threads::SincQueue<int> queue;
+    Threads::AsyncQueue<int> queue;
 
     for (int i = 0; i < size; ++i) {
         queue.push(i);
@@ -21,22 +21,23 @@ TEST(SingleThread, AppendOrder) {
 
 TEST(SingleThread, Empty) {
     constexpr int size = 500;
-    Threads::SincQueue<int> queue;
+    Threads::AsyncQueue<int> queue;
 
     for (int i = 0; i < size; ++i) {
         queue.push(i);
     }
 
     for (int i = 0; i < 2 * size; ++i) {
-        if (!queue.empty()) {
-            ASSERT_EQ(queue.pop(), i);
+        auto result = queue.tryPop();
+        if (result) {
+            ASSERT_EQ(*result, i);
         }
     }
 }
 
 TEST(MultipleThreads, AddInOneThreadPopInAnother) {
     constexpr int size = 500;
-    Threads::SincQueue<int> queue;
+    Threads::AsyncQueue<int> queue;
 
     std::thread thread{[&queue] {
         for (int i = 0; i < size; ++i) {
@@ -53,7 +54,7 @@ TEST(MultipleThreads, AddInOneThreadPopInAnother) {
 
 TEST(MultipleThreads, TestForDRD) {
     constexpr int size = 300;
-    Threads::SincQueue<int> queue;
+    Threads::AsyncQueue<int> queue;
 
     std::vector<int> valuePopped;
     valuePopped.reserve(size);
