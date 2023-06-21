@@ -32,9 +32,6 @@ namespace Threads {
         using m_Task = std::function<void()>;
 
      private:
-        /**
-         * @brief Stops accepting new tasks, thus stopping Executor. Tasks which have been added before stop will be executed.
-         */
         auto m_stop() -> void;
 
         auto m_addTask(const m_Task& task) -> void;
