@@ -13,31 +13,26 @@ namespace Threads {
     }
 
     Executor::~Executor() {
-        stop();
-        std::ranges::for_each(m_threads, [](std::thread& thread) { thread.join(); });
+        m_stop();
     }
 
-    auto Executor::stop() -> void {
+    auto Executor::m_stop() -> void {
         m_isRunning = false;
-        m_condVariable.notify_all();
+        m_queueCondVariable.notify_all();
     }
 
-    auto Executor::m_addTask(const Executor::Task& task) -> void {
-        if (!m_isRunning) {
-            return;
-        }
-
-        std::lock_guard lock{m_mutex};
+    auto Executor::m_addTask(const Executor::m_Task& task) -> void {
+        std::lock_guard lock{m_queueMutex};
         m_queue.push(task);
     }
 
     auto Executor::m_loop() -> void {
         for (;;) {
-            Executor::Task task;
+            Executor::m_Task task;
 
             {
-                std::unique_lock lock{m_mutex};
-                m_condVariable.wait(lock, [this] { return !m_queue.empty() || !m_isRunning; });
+                std::unique_lock lock{m_queueMutex};
+                m_queueCondVariable.wait(lock, [this] { return !m_queue.empty() || !m_isRunning; });
                 if (!m_isRunning && m_queue.empty()) {
                     return;
                 }

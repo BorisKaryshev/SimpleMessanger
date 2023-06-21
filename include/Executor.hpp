@@ -12,12 +12,12 @@
 namespace Threads {
 
     /**
-     * @brief Thread pool. Contains some amount of threads, and execute tasks in them.
+     * @brief Thread pool. Amount of threads specified in constructor.
      */
     class Executor {
      public:
         /**
-         * @param numOfThreads Number of threads to be created in Executor.
+         * @param numOfThreads Amount of threads to be created in Executor.
          */
         explicit Executor(std::size_t numOfThreads = 1);
         ~Executor();
@@ -28,24 +28,25 @@ namespace Threads {
             m_addTask(std::bind(std::forward<Func>(func), std::forward<Args>(args)...));
         }
 
+     private:
+        using m_Task = std::function<void()>;
+
+     private:
         /**
          * @brief Stops accepting new tasks, thus stopping Executor. Tasks which have been added before stop will be executed.
          */
-        auto stop() -> void;
+        auto m_stop() -> void;
 
-     private:
-        using Task = std::function<void()>;
-
-     private:
-        auto m_addTask(const Task& task) -> void;
+        auto m_addTask(const m_Task& task) -> void;
         auto m_loop() -> void;
 
      private:
         std::atomic_bool m_isRunning;
-        std::mutex m_mutex;
-        std::condition_variable m_condVariable;
-        std::queue<Task> m_queue;
-        std::vector<std::thread> m_threads;
+        std::mutex m_queueMutex;
+        std::condition_variable m_queueCondVariable;
+
+        std::queue<m_Task> m_queue;
+        std::vector<std::jthread> m_threads;
     };
 
 }  // namespace Threads
