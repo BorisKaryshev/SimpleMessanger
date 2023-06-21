@@ -30,7 +30,8 @@ namespace SiM {
 
         [[nodiscard]] auto serialize() const -> const std::string&;
 
-        friend auto operator<=>(const Message& lhs, const Message& rhs) noexcept = default;
+        [[nodiscard]] auto operator<(const Message& other) const noexcept -> bool;
+        [[nodiscard]] auto operator==(const Message& other) const noexcept -> bool;
 
      private:
         friend class boost::serialization::access;
@@ -53,6 +54,13 @@ namespace SiM {
         arh& m_from;
         arh& m_to;
         arh& m_text;
+    }
+
+    [[nodiscard]] inline auto Message::operator<(const Message& other) const noexcept -> bool {
+        return m_messageId < other.m_messageId;
+    }
+    [[nodiscard]] inline auto Message::operator==(const Message& other) const noexcept -> bool {
+        return m_messageId == other.m_messageId;
     }
 
 }  // namespace SiM

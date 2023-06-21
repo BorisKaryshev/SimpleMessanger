@@ -8,9 +8,7 @@
 namespace SiM {
 
     Message::Message(Message::IdType messageId, std::string loginFrom, std::string loginTo, std::string text)
-        : m_messageId(messageId), m_from(std::move(loginFrom)), m_to(std::move(loginTo)), m_text(std::move(text)) {
-        [[maybe_unused]] auto tmp = serialize();
-    }
+        : m_messageId(messageId), m_from(std::move(loginFrom)), m_to(std::move(loginTo)), m_text(std::move(text)) {}
 
     [[nodiscard]] auto Message::id() const noexcept -> const IdType& {
         return m_messageId;
