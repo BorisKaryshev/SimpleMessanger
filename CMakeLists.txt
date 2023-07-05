@@ -19,18 +19,13 @@ else()
 endif()
 
 if(ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=address -fsanitize=leak)
-    add_link_options(-fsanitize=address -fsanitize=leak)
+    add_compile_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
+    add_link_options(-fsanitize=address -fsanitize=leak -fsanitize=undefined)
 endif()
 
 if(ENABLE_THREAD_SANITIZERS)
-    add_compile_options(-fsanitize=thread -fsanitize=undefined)
-    add_link_options(-fsanitize=thread -fsanitize=undefined)
-endif()
-
-if(ENABLE_THREAD_SANITIZERS OR ENABLE_MEMORY_SANITIZERS)
-    add_compile_options(-fsanitize=undefined)
-    add_link_options(-fsanitize=undefined)
+    add_compile_options(-fsanitize=thread)
+    add_link_options(-fsanitize=thread)
 endif()
 
 if(ENABLE_COVERAGE)
@@ -42,7 +37,7 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
-
+    ${PROJECT_SOURCE_DIR}/src/SampleSource.cpp
 )
 
 set(include_locations
@@ -50,6 +45,8 @@ set(include_locations
 )
 
 set(includes 
+    ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
+    ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
     ${PROJECT_SOURCE_DIR}/include/Notifier.hpp   
 )
 
@@ -68,7 +65,7 @@ target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(exe ${project_name}_lib ${libs})
 
 if(ENABLE_CLANG_TIDY) 
-    find_program(CLANG_TIDY "clang-tidy-15")
+    find_program(CLANG_TIDY "clang-tidy")
     add_custom_target(
         TIDY_TARGET ALL
         COMMAND ${CLANG_TIDY}
@@ -147,5 +144,5 @@ if(ENABLE_COVERAGE OR ENABLE_TESTING)
 endif()
 
 if(ENABLE_COVERAGE)
-    target_link_libraries(${project_name} gcov)
+    target_link_libraries(exe gcov)
 endif()
