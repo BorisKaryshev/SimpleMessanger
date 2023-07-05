@@ -37,6 +37,7 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
+    ${PROJECT_SOURCE_DIR}/src/Executor.cpp
     ${PROJECT_SOURCE_DIR}/src/SampleSource.cpp
 )
 
@@ -45,6 +46,7 @@ set(include_locations
 )
 
 set(includes 
+    ${PROJECT_SOURCE_DIR}/include/Executor.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
     ${PROJECT_SOURCE_DIR}/include/Notifier.hpp   
@@ -77,10 +79,10 @@ if(ENABLE_CLANG_TIDY)
 endif()
 
 if(ENABLE_CLANG_FORMAT)
-    find_program(CLANG_FORMAT "clang-format")
+    find_program(CLANG_FORMAT "clang-format-15")
     add_custom_target(
         FORMAT_CHECK_TARGET ALL
-        COMMAND clang-format
+        COMMAND ${CLANG_FORMAT}
         --dry-run
         --Werror
         -style=file:${PROJECT_SOURCE_DIR}/configs/.clang-format
@@ -91,7 +93,7 @@ if(ENABLE_CLANG_FORMAT)
 
     add_custom_target(
         FORMAT_TARGET ALL
-        COMMAND clang-format
+        COMMAND ${CLANG_FORMAT}
         -i
         --Werror
         -style=file:${PROJECT_SOURCE_DIR}/configs/.clang-format
