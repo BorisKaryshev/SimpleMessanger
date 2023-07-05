@@ -47,6 +47,7 @@ set(include_locations
 set(includes 
     ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
+    ${PROJECT_SOURCE_DIR}/include/Notifier.hpp   
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
