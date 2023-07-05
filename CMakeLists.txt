@@ -38,6 +38,7 @@ endif()
 
 set(source
     ${PROJECT_SOURCE_DIR}/src/Executor.cpp
+    ${PROJECT_SOURCE_DIR}/src/SampleSource.cpp
 )
 
 set(include_locations
@@ -46,6 +47,9 @@ set(include_locations
 
 set(includes 
     ${PROJECT_SOURCE_DIR}/include/Executor.hpp
+    ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
+    ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
+    ${PROJECT_SOURCE_DIR}/include/Notifier.hpp   
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
