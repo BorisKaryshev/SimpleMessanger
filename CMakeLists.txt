@@ -46,11 +46,11 @@ set(source
 )
 
 set(include_locations
-
+    ${PROJECT_SOURCE_DIR}/include
 )
 
 set(includes 
-
+    ${PROJECT_SOURCE_DIR}/include/Notifier.hpp   
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
