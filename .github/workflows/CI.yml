@@ -17,7 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      - uses: snickerbockers/submodules-init@v4
+      
       - name: Install cppcheck
         run: |
           sudo apt-get update -y
@@ -33,6 +34,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
 
       - name: Install clang-tidy
         run: |
@@ -49,11 +51,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
 
       - name: Install clang-format
         run: |
           sudo apt-get update -y
-          sudo apt-get install g++ cmake clang-format
+          sudo apt-get install g++ cmake clang-format-15
 
       - name: Run clang-format
         run: | 
@@ -66,6 +69,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: snickerbockers/submodules-init@v4
 
       - name: Install cmake
         run: |
@@ -168,10 +172,10 @@ jobs:
       - name: Generate detailed code coverage report
         run: |
           mkdir -p coverage_report
-          gcovr --exclude "googletest|tests|src/main.cpp" --exclude-throw-branches --xml ./coverage_report/coverage.xml
+          gcovr --exclude "googletest|tests|src/main.cpp|libs" --exclude-throw-branches --xml ./coverage_report/coverage.xml
       
       - name: Generate coverage report for PR comment
-        run: gcovr --exclude "googletest|tests|src/main.cpp" --exclude-throw-branches --html-details coverage_report/main.html
+        run: gcovr --exclude "googletest|tests|src/main.cpp|libs" --exclude-throw-branches --html-details coverage_report/main.html
 
       - uses: actions/upload-artifact@v3
         with:
