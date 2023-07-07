@@ -4,7 +4,7 @@
 
 namespace SiM {
 
-    Connection::Connection(boost::asio::ip::tcp::socket sock) : m_sock(std::move(sock)), m_isRunning(false) {}
+    Connection::Connection(boost::asio::ip::tcp::socket sock) : m_sock(std::move(sock)), m_isRunning(false), m_acceptedMessage() {}
 
     auto Connection::run() -> void {
         if (m_sock.is_open()) {
@@ -38,7 +38,7 @@ namespace SiM {
             constexpr char endLine = '\0';
 
             if (!errorCode) {
-                m_acceptedMessage[bytes] = endLine;
+                m_acceptedMessage.at(bytes) = endLine;
                 notifyAll(m_acceptedMessage.data());
             } else if (errorCode == boost::asio::error::operation_aborted) {
                 return;
