@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <concepts>
 #include <list>
+#include <mutex>
 #include <ranges>
 
 namespace SiM {
@@ -16,29 +17,21 @@ namespace SiM {
         };
 
      public:
-        auto addListener(Listener* listener) -> void { m_listeners.push_front(listener); }
-        auto removeListener(Listener* listener) -> void {
-            auto iterator = std::ranges::find(m_listeners, listener);
-            if (iterator != m_listeners.end()) {
-                m_listeners.erase(iterator);
-            }
-        }
+        auto addListener(Listener* listener) -> Notifier&;
+        auto removeListener(Listener* listener) -> Notifier&;
 
      protected:
-        auto notifyAll(const Args&... args) -> void {
-            std::ranges::for_each(m_listeners,
-                                  [... args = static_cast<const Args&>(args)](Listener* listener) { listener->notify(args...); });
-        }
+        auto notifyAll(const Args&... args) -> void;
 
         template <typename Pred>
             requires std::is_invocable_r_v<bool, Pred, Listener*>
-        auto notifyAllIf(Pred&& pred, const Args&... args) -> void {
-            std::ranges::for_each(m_listeners | std::views::filter(pred),
-                                  [... args = static_cast<const Args&>(args)](Listener* listener) { listener->notify(args...); });
-        }
+        auto notifyAllIf(Pred&& pred, const Args&... args) -> void;
 
      private:
+        std::mutex m_listenersContainerModification;
         std::list<Listener*> m_listeners;
     };
 
 }  // namespace SiM
+
+#include "Notifier.inl"
