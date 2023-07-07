@@ -32,8 +32,8 @@ namespace SiM {
 
      private:
         boost::asio::ip::tcp::socket m_sock;
-        std::atomic_bool m_isRunning{true};
-
+        std::atomic_bool m_isRunning;
+        
         std::array<char, maxMessageSize> m_acceptedMessage;
     };
 

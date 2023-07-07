@@ -4,10 +4,10 @@
 
 namespace SiM {
 
-    Connection::Connection(boost::asio::ip::tcp::socket sock) : m_sock(std::move(sock)) {}
+    Connection::Connection(boost::asio::ip::tcp::socket sock) : m_sock(std::move(sock)), m_isRunning(false) {}
 
     auto Connection::run() -> void {
-        if (m_sock.available()) {
+        if (m_sock.is_open()) {
             m_isRunning = true;
             m_read();
         } else {
@@ -16,7 +16,8 @@ namespace SiM {
     }
 
     auto Connection::stop() -> void {
-        m_sock.close();
+        m_sock.cancel();
+        m_isRunning = false;
     }
 
     auto Connection::isRunning() const noexcept -> bool {
@@ -27,7 +28,7 @@ namespace SiM {
         if (text.size() > maxMessageSize) {
             throw std::runtime_error("Messages with size more than " + std::to_string(maxMessageSize) + " bytes are not supported");
         }
-        if (m_sock.is_open()) {
+        if (m_isRunning && m_sock.is_open()) {
             m_sock.async_send(boost::asio::buffer(text), []([[maybe_unused]] const boost::system::error_code&, [[maybe_unused]] size_t) {});
         }
     }
