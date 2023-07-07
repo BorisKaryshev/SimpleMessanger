@@ -8,24 +8,46 @@
 
 namespace SiM {
 
+    /**
+     * @details Is thread safe if listeners are.
+     */
     template <typename... Args>
     class Notifier {
      public:
         class Listener {
          public:
-            virtual auto notify(const Args&... message) -> void = 0;
+            virtual constexpr auto notify(const Args&... message) -> void = 0;
         };
 
      public:
-        auto addListener(Listener* listener) -> Notifier&;
-        auto removeListener(Listener* listener) -> Notifier&;
+        auto addListener(Listener* listener) -> Notifier& {
+            std::lock_guard lock{m_listenersContainerModification};
+
+            m_listeners.push_front(listener);
+            return *this;
+        }
+
+        auto removeListener(Listener* listener) -> Notifier& {
+            std::lock_guard lock{m_listenersContainerModification};
+
+            m_listeners.remove(listener);
+            return *this;
+        }
 
      protected:
-        auto notifyAll(const Args&... args) -> void;
+        auto notifyAll(const Args&... args) -> void {
+            std::ranges::for_each(m_listeners, [... args = static_cast<const Args&>(args)](typename Notifier<Args...>::Listener* listener) {
+                listener->notify(args...);
+            });
+        }
 
         template <typename Pred>
-            requires std::is_invocable_r_v<bool, Pred, Listener*>
-        auto notifyAllIf(Pred&& pred, const Args&... args) -> void;
+            requires std::is_invocable_r_v<bool, Pred, typename Notifier<Args...>::Listener*>
+        auto notifyAllIf(Pred&& pred, const Args&... args) -> void {
+            std::ranges::for_each(
+                m_listeners | std::views::filter(pred),
+                [... args = static_cast<const Args&>(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
+        }
 
      private:
         std::mutex m_listenersContainerModification;
@@ -33,5 +55,3 @@ namespace SiM {
     };
 
 }  // namespace SiM
-
-#include "Notifier.inl"
