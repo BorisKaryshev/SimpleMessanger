@@ -2,9 +2,9 @@
 
 #include <algorithm>
 #include <concepts>
+#include <list>
 #include <mutex>
 #include <ranges>
-#include <unordered_set>
 
 namespace SiM {
 
@@ -29,7 +29,7 @@ namespace SiM {
 
      private:
         std::mutex m_listenersContainerModification;
-        std::unordered_set<Listener*> m_listeners;
+        std::list<Listener*> m_listeners;
     };
 
 }  // namespace SiM
