@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <concepts>
-#include <list>
+#include <forward_list>
 #include <mutex>
 #include <ranges>
 
@@ -29,7 +29,7 @@ namespace SiM {
 
      private:
         std::mutex m_listenersContainerModification;
-        std::list<Listener*> m_listeners;
+        std::forward_list<Listener*> m_listeners;
     };
 
 }  // namespace SiM
