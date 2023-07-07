@@ -9,7 +9,7 @@ namespace SiM {
     inline auto Notifier<Args...>::addListener(typename Notifier<Args...>::Listener* listener) -> Notifier<Args...>& {
         std::lock_guard lock{m_listenersContainerModification};
 
-        m_listeners.insert(listener);
+        m_listeners.push_front(listener);
         return *this;
     }
 
@@ -17,10 +17,7 @@ namespace SiM {
     inline auto Notifier<Args...>::removeListener(typename Notifier<Args...>::Listener* listener) -> Notifier<Args...>& {
         std::lock_guard lock{m_listenersContainerModification};
 
-        auto iterator = m_listeners.find(listener);
-        if (iterator != m_listeners.end()) {
-            m_listeners.erase(iterator);
-        }
+        m_listeners.remove(listener);
         return *this;
     }
 
