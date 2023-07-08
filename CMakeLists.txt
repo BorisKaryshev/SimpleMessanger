@@ -81,6 +81,8 @@ target_link_libraries(exe ${project_name}_lib)
 target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
 target_compile_options(${project_name}_lib PRIVATE  -Wall -Wextra -Werror -Wpedantic -pthread)
 
+target_compile_options(exe PUBLIC -pthread)
+target_compile_options(${project_name}_lib PUBLIC -pthread)
 
 if(${BUILD_MODE} STREQUAL "DEBUG")
     target_compile_options(exe PRIVATE  -g -O0)
