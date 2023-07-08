@@ -1,6 +1,11 @@
 #include "TCP.hpp"
+#include "LowLevelMessage.hpp"
 
+#include <iomanip>
 #include <iostream>
+#include <sstream>
+
+using SiM::Detail::Message;
 
 namespace SiM {
 
@@ -28,24 +33,36 @@ namespace SiM {
         if (text.size() > maxMessageSize) {
             throw std::runtime_error("Messages with size more than " + std::to_string(maxMessageSize) + " bytes are not supported");
         }
-        if (m_isRunning && m_sock.is_open()) {
-            m_sock.async_send(boost::asio::buffer(text), []([[maybe_unused]] const boost::system::error_code&, [[maybe_unused]] size_t) {});
+
+        auto handler = [this](const boost::system::error_code& ec, [[maybe_unused]] size_t) {
+            if (ec) {
+                std::cout << "Unable to send message: " << ec << "\n";
+            }
+        };
+
+        if (m_isRunning) {
+            Message message(text);
+            m_sock.async_send(boost::asio::buffer(message.serialize()), handler);
         }
     }
 
     auto Connection::m_read() -> void {
-        auto readHandler = [this]([[maybe_unused]] const boost::system::error_code& errorCode, size_t bytes) {
-            constexpr char endLine = '\0';
-
+        auto readHandler = [this](const boost::system::error_code& errorCode, size_t bytes) {
             if (!errorCode) {
-                m_acceptedMessage.at(bytes) = endLine;
-                notifyAll(m_acceptedMessage.data());
+                std::stringstream stream;
+                stream << std::string(m_acceptedMessage.data(), bytes);
+                while (stream.rdbuf()->in_avail()) {
+                    Message message;
+                    stream >> message;
+                    notifyAll(message.text());
+                }
+
             } else if (errorCode == boost::asio::error::operation_aborted) {
                 return;
             } else {
                 std::cerr << "Error happened " << errorCode << "\n";
+                return;
             }
-
             m_read();
         };
 

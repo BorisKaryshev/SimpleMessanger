@@ -20,14 +20,22 @@ set(Message_test ${PROJECT_SOURCE_DIR}/tests/Message.cpp)
 add_executable(${Message_test_name}_tests_run ${Message_test})
 target_link_libraries(${Message_test_name}_tests_run ${libs})
 
+
+set(Connection_test_name Connection_TESTS)
+set(Connection_test ${PROJECT_SOURCE_DIR}/tests/Connection.cpp)
+add_executable(${Connection_test_name}_tests_run ${Connection_test})
+target_link_libraries(${Connection_test_name}_tests_run ${libs})
+
 add_custom_target(
     tests_list_target 
     DEPENDS 
     ${Message_test_name}_tests_run
     ${Executor_test_name}_tests_run
+    ${Connection_test_name}_tests_run
     ${SincQueue_test_name}_tests_run
 )
 
 add_test(NAME ${Message_test_name} COMMAND ${Message_test_name}_tests_run)
 add_test(NAME ${Executor_test_name} COMMAND ${Executor_test_name}_tests_run)
 add_test(NAME ${SincQueue_test_name} COMMAND ${SincQueue_test_name}_tests_run)
+add_test(NAME ${Connection_test_name} COMMAND ${Connection_test_name}_tests_run)
