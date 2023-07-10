@@ -30,8 +30,9 @@ namespace SiM::Detail {
     }
 
     auto operator>>(std::istream& stream, Message& message) -> std::istream& {
-        std::size_t size{};
-        stream >> std::setw(Message::MaxSizeLength) >> size;
+        std::string sizeString(Message::MaxSizeLength, ' ');
+        stream.read(sizeString.data(), static_cast<std::streamsize>(Message::MaxSizeLength));
+        std::size_t size{std::stoull(sizeString)};
 
         message.m_text = std::string(size, ' ');
         stream.read(message.m_text.data(), static_cast<std::streamsize>(size));
