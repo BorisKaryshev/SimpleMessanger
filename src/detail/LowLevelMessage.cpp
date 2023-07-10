@@ -2,7 +2,7 @@
 
 namespace SiM::Detail {
 
-    Message::Message(const std::string& text) : m_text(text) {}
+    Message::Message(std::string text) : m_text(std::move(text)) {}
 
     [[nodiscard]] auto Message::text() const noexcept -> const std::string& {
         return m_text;
@@ -31,10 +31,10 @@ namespace SiM::Detail {
 
     auto operator>>(std::istream& stream, Message& message) -> std::istream& {
         std::size_t size{};
-        stream >> std::setw(message.MaxSizeLength) >> size;
+        stream >> std::setw(Message::MaxSizeLength) >> size;
 
         message.m_text = std::string(size, ' ');
-        stream.read(message.m_text.data(), size);
+        stream.read(message.m_text.data(), static_cast<std::streamsize>(size));
 
         message.m_serialized.clear();
 

@@ -8,7 +8,7 @@ namespace SiM::Detail {
 
     class Message {
      public:
-        Message(const std::string& text = "");
+        Message(std::string text = "");
         [[nodiscard]] auto text() const noexcept -> const std::string&;
         [[nodiscard]] auto serialize() const -> const std::string&;
 
@@ -17,7 +17,7 @@ namespace SiM::Detail {
         friend auto operator>>(std::istream& stream, Message& message) -> std::istream&;
 
      public:
-        static constexpr std::size_t MaxSizeLength = 5;
+        static constexpr unsigned short MaxSizeLength = 5;
 
      private:
         std::string m_text;
