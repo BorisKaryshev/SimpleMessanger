@@ -35,10 +35,10 @@ namespace {
             run();
         }
 
-        auto notify(const std::string& message) -> void override {
+        auto notify(std::string message) -> void override {
             std::lock_guard lock(m_messagesListOperations);
             print("Got message: |", message, "|\n");
-            m_messages.push_back(message);
+            m_messages.emplace_back(std::move(message));
         }
 
         [[nodiscard]] auto getMessages() const -> const std::list<std::string>& {
@@ -85,6 +85,9 @@ namespace {
     }
 
     auto testSendingAndReceivingMessage(const std::list<std::string>& messagesToSend) -> std::list<std::string> {
+        static std::mutex testMutex;
+        std::lock_guard lock(testMutex);
+
         boost::asio::io_context context;
 
         AcceptConnection server(context);
@@ -97,7 +100,11 @@ namespace {
 
         SiM::Connection connection(SiM::Launch::RunAtConstruction, std::move(sock));
 
+        print("Messages to send\n");
+        std::ranges::for_each(messagesToSend, [](const std::string& message) { print("\t|", message, "|\n"); });
+
         for (const auto& message : messagesToSend) {
+            print("Sending message: |", message, "|\n");
             connection.send(message);
         }
 
@@ -115,6 +122,12 @@ using namespace std::chrono_literals;
 
 TEST(ClientServerInteraction, SimpleMessages) {
     std::list<std::string> messages{"Hi, this is the simplest message"s, "More text"s, std::string(1000, 'a')};
+
+    EXPECT_EQ(messages, testSendingAndReceivingMessage(messages));
+}
+
+TEST(ClientServerInteraction, EmptyMessages) {
+    std::list<std::string> messages{""s, "Hi, this is the simplest message"s, ""s, "More text"s, ""s, std::string(1000, 'a')};
 
     EXPECT_EQ(messages, testSendingAndReceivingMessage(messages));
 }
