@@ -53,7 +53,8 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
     ${PROJECT_SOURCE_DIR}/include/Notifier.hpp 
-    ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp  
+    ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
+    ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
