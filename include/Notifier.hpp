@@ -9,7 +9,7 @@
 namespace SiM {
 
     /**
-     * @details Is thread safe if listeners are.
+     * @details Notifier is thread safe.
      */
     template <typename... Args>
     class Notifier {
@@ -35,18 +35,19 @@ namespace SiM {
         }
 
      protected:
-        auto notifyAll(const Args&... args) -> void {
-            std::ranges::for_each(m_listeners, [... args = static_cast<const Args&>(args)](typename Notifier<Args...>::Listener* listener) {
-                listener->notify(args...);
-            });
+        auto notifyAll(Args... args) -> void {
+            std::lock_guard lock(m_listenersContainerModification);
+            std::ranges::for_each(
+                m_listeners, [... args = std::move(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
         }
 
         template <typename Pred>
             requires std::is_invocable_r_v<bool, Pred, typename Notifier<Args...>::Listener*>
-        auto notifyAllIf(Pred&& pred, const Args&... args) -> void {
+        auto notifyAllIf(Pred&& pred, Args... args) -> void {
+            std::lock_guard lock(m_listenersContainerModification);
             std::ranges::for_each(
                 m_listeners | std::views::filter(pred),
-                [... args = static_cast<const Args&>(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
+                [... args = std::move(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
         }
 
      private:
