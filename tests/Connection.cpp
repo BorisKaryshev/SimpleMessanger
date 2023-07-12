@@ -35,14 +35,14 @@ namespace {
             run();
         }
 
-        auto notify(std::string message) -> void override {
-            std::lock_guard lock(m_messagesListOperations);
+        auto notify(const std::string& message) -> void override {
+            // std::lock_guard lock(m_messagesListOperations);
             print("Got message: |", message, "|\n");
-            m_messages.emplace_back(std::move(message));
+            m_messages.push_back(message);
         }
 
         [[nodiscard]] auto getMessages() const -> const std::list<std::string>& {
-            std::lock_guard lock(m_messagesListOperations);
+            // std::lock_guard lock(m_messagesListOperations);
             return m_messages;
         }
 
@@ -84,6 +84,8 @@ namespace {
         context.run();
     }
 
+    using namespace std::chrono_literals;
+
     auto testSendingAndReceivingMessage(const std::list<std::string>& messagesToSend) -> std::list<std::string> {
         static std::mutex testMutex;
         std::lock_guard lock(testMutex);
@@ -122,12 +124,36 @@ using namespace std::chrono_literals;
 
 TEST(ClientServerInteraction, SimpleMessages) {
     std::list<std::string> messages{"Hi, this is the simplest message"s, "More text"s, std::string(1000, 'a')};
+    const auto result = testSendingAndReceivingMessage(messages);
 
-    EXPECT_EQ(messages, testSendingAndReceivingMessage(messages));
+    EXPECT_EQ(messages, result);
 }
 
 TEST(ClientServerInteraction, EmptyMessages) {
     std::list<std::string> messages{""s, "Hi, this is the simplest message"s, ""s, "More text"s, ""s, std::string(1000, 'a')};
+    const auto result = testSendingAndReceivingMessage(messages);
 
-    EXPECT_EQ(messages, testSendingAndReceivingMessage(messages));
+    EXPECT_EQ(messages, result);
+}
+
+TEST(ClientServerInteraction, BufferOverrun) {
+    std::list<std::string> messages{"Hi, this is first message"s, std::string(3000, 'a'), std::string(3000, 'a'), std::string(3000, 'a'),
+                                    std::string(3000, 'a')};
+
+    /*
+        const auto result = testSendingAndReceivingMessage(messages);
+        EXPECT_EQ(messages, result);
+    */
+}
+
+TEST(ClientServerInteraction, RepeatedMessagesWhichOversizeBuffer) {
+    std::list<std::string> messages;
+
+    constexpr std::size_t numOfMessages = 10;
+    for (std::size_t i = 0; i < numOfMessages; ++i) {
+        messages.emplace_back("Repeated message");
+    }
+    const std::list<std::string> result = testSendingAndReceivingMessage(messages);
+
+    EXPECT_EQ(messages, result);
 }
