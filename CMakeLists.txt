@@ -35,28 +35,38 @@ if(ENABLE_CLANG_TIDY OR ENABLE_CPPCHECK)
 endif()
 
 set(source
+    ${PROJECT_SOURCE_DIR}/src/TCP.cpp
     ${PROJECT_SOURCE_DIR}/src/Message.cpp
     ${PROJECT_SOURCE_DIR}/src/Executor.cpp
-
+    ${PROJECT_SOURCE_DIR}/src/detail/LowLevelMessage.cpp
 )
 
 set(include_locations
     ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include/detail
 )
 
 set(includes 
+    ${PROJECT_SOURCE_DIR}/include/TCP.hpp
     ${PROJECT_SOURCE_DIR}/include/Message.hpp
     ${PROJECT_SOURCE_DIR}/include/Executor.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
-    ${PROJECT_SOURCE_DIR}/include/Notifier.hpp   
+    ${PROJECT_SOURCE_DIR}/include/Notifier.hpp 
+    ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
+    ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
 
-hunter_add_package(Boost COMPONENTS serialization)
-find_package(Boost CONFIG REQUIRED serialization)
+hunter_add_package(asio)
+hunter_add_package(Boost COMPONENTS thread serialization)
+
+find_package(Boost CONFIG REQUIRED thread serialization)
+find_package(asio CONFIG REQUIRED)
 set(libs 
+    asio::asio_shared
+    Boost::thread
     Boost::serialization
 )
 
@@ -147,6 +157,7 @@ if(ENABLE_COVERAGE OR ENABLE_TESTING)
         TESTS_TARGET ALL
         COMMAND ctest
         --output-on-failure
+        --repeat-until-fail 100
         --test-dir ${PROJECT_BINARY_DIR}
         DEPENDS tests_list_target ${libs_names}
     )
