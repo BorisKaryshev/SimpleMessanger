@@ -7,6 +7,17 @@
 
 using SiM::Detail::Message;
 
+namespace {
+
+    template <typename... Args>
+    auto print(const Args&... args) -> void {
+        std::stringstream stream;
+        (stream << ... << args);
+        std::cout << stream.str();
+    }
+
+}  // namespace
+
 namespace SiM {
 
     Connection::Connection(boost::asio::ip::tcp::socket sock) : m_sock(std::move(sock)), m_isRunning(false), m_acceptedMessage() {}
@@ -40,39 +51,29 @@ namespace SiM {
     }
 
     auto Connection::send(const std::string& text) -> void {
-        m_send(std::make_shared<Detail::Message>(text), std::make_shared<std::size_t>(1));
-    }
+        auto message = std::make_shared<Message>(text);
 
-    auto Connection::m_send(std::shared_ptr<Detail::Message> message, std::shared_ptr<std::size_t> count) -> void {
         if (message->serialize().size() > maxMessageSize) {
             throw std::runtime_error("Messages with size more than " + std::to_string(maxMessageSize) + " bytes are not supported");
         }
 
         if (m_isRunning) {
-            auto handler = [this, message, count](const boost::system::error_code& errorCode, [[maybe_unused]] size_t) {
+            auto handler = [this, message](const boost::system::error_code& errorCode, [[maybe_unused]] size_t bytes) {
                 if (errorCode) {
                     std::cout << "ERROR m_send(): " << errorCode.message() << "\n";
-
-                    if (errorCode != boost::asio::error::operation_aborted) {
-                        if ((*count) < 3) {
-                            this->m_send(message, count);
-                        }
-                        ++(*count);
-                    }
                 }
             };
 
-            m_sock.async_send(boost::asio::buffer(message->serialize()), handler);
+            m_sock.async_write_some(boost::asio::buffer(message->serialize()), handler);
         }
     }
 
     auto Connection::m_read() -> void {
         auto readHandler = [this](const boost::system::error_code& errorCode, size_t bytes) {
             if (!errorCode) {
-                std::stringstream stream;
-                stream.str(std::string(m_acceptedMessage.data(), bytes));
+                std::stringstream stream(std::string(m_acceptedMessage.data(), bytes));
 
-                while (stream.rdbuf()->in_avail() != 0) {
+                while (stream.rdbuf()->in_avail() != 0 && bytes > 0) {
                     Message message;
                     stream >> message;
                     notifyAll(message.text());

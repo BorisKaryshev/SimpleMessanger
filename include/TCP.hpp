@@ -35,7 +35,6 @@ namespace SiM {
      private:
         Connection(boost::asio::ip::tcp::socket sock);
         auto m_read() -> void;
-        auto m_send(std::shared_ptr<Detail::Message> message, std::shared_ptr<std::size_t> count) -> void;
 
      private:
         constexpr static size_t kiloByte = 1 << 10;
