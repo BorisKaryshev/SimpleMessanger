@@ -58,7 +58,7 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
 
     ${PROJECT_SOURCE_DIR}/include/logic/Interfaces.hpp  
-    ${PROJECT_SOURCE_DIR}/include/logic/ClientLogic.hpp
+    ${PROJECT_SOURCE_DIR}/include/logic/Client.hpp
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
