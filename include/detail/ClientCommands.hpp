@@ -87,7 +87,15 @@ namespace SiM::Logic::Client::Commands {
 
     class StopCommand final : public Interfaces::CommandBase {
      public:
-        StopCommand(Interfaces::AsioApplicationBase& application);
+        using Interfaces::CommandBase::CommandBase;
+
+        auto execute() -> void override;
+    };
+
+    class UnparsedCommand final : public Interfaces::CommandBase {
+     public:
+        using Interfaces::CommandBase::CommandBase;
+
         auto execute() -> void override;
     };
 

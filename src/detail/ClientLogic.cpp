@@ -17,7 +17,7 @@ namespace SiM::Logic::Client::Detail {
             std::string receiverLogin(receiverLoginView.data(), receiverLoginView.size());
             std::string text = Commands::dropFirstNTokens(command, 2).data();
 
-            Message messageToSend(++m_messageId, Commands::send::initialLogin.data(), receiverLogin, text);
+            Message messageToSend(++m_messageId, m_clientLogin, receiverLogin, text);
 
             return std::make_shared<Commands::SendMessageCommand>(m_application, messageToSend);
         }
@@ -26,7 +26,11 @@ namespace SiM::Logic::Client::Detail {
             return std::make_shared<Commands::StopCommand>(m_application);
         }
 
-        return std::make_shared<Interfaces::CommandBase>(m_application);
+        return std::make_shared<Commands::UnparsedCommand>(m_application);
+    }
+
+    auto ClientCommandParser::setLogin(const std::string& login) -> void {
+        m_clientLogin = login;
     }
 
 }  // namespace SiM::Logic::Client::Detail

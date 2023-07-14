@@ -15,9 +15,11 @@ namespace SiM::Logic::Client::Detail {
     class ClientCommandParser final : public Interfaces::CommandParserBase {
      public:
         ClientCommandParser(Interfaces::AsioApplicationBase& application);
-        auto parseCommand(std::string_view command) -> std::shared_ptr<Interfaces::CommandBase> override;
+        [[nodiscard]] auto parseCommand(std::string_view command) -> std::shared_ptr<Interfaces::CommandBase> override;
+        auto setLogin(const std::string& login) -> void;
 
      private:
+        std::string m_clientLogin;
         mutable Message::IdType m_messageId;
     };
 

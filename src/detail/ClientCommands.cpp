@@ -1,8 +1,12 @@
 #include "detail/ClientCommands.hpp"
+#include "detail/AsyncPrint.hpp"
 
 namespace SiM::Logic::Client::Commands {
 
-    StopCommand::StopCommand(Interfaces::AsioApplicationBase& application) : CommandBase(application) {}
+    auto UnparsedCommand::execute() -> void {
+        print(std::cout, "Command unrecognized. Try again\n");
+    }
+
     auto StopCommand::execute() -> void {
         m_application.stop();
     }

@@ -24,32 +24,25 @@ namespace SiM::Logic::Client {
     }
 
     auto Client::stop() -> void {
-        m_isRunning = false;
         m_connection->close();
     }
 
     auto Client::run() -> void {
         Detail::ClientCommandParser parser(*this);
         m_connection->run();
-        std::jthread worker([this] {
-            print(std::cout, "Worker started\n");
-            m_context.run();
-            print(std::cout, "Worker ended\n");
-        });
 
-        m_isRunning = true;
+        std::jthread worker([this] { m_context.run(); });
 
-        m_sendLoginOnServer();
+        parser.setLogin(m_sendLoginOnServer());
 
-        while (m_isRunning) {
+        while (m_connection->isRunning()) {
             std::string command;
             std::getline(std::cin, command);
-            print(std::cout, "Parsing command |", command, "|\n");
             parser.parseCommand(command)->execute();
         }
     }
 
-    auto Client::m_sendLoginOnServer() -> void {
+    auto Client::m_sendLoginOnServer() -> std::string {
         std::string login;
         print(std::cout, "Enter your login: ");
         std::getline(std::cin, login);
@@ -61,6 +54,8 @@ namespace SiM::Logic::Client {
 
         Message message(0, login, Constants::serverName.data(), "");
         send(message);
+
+        return login;
     }
 
 }  // namespace SiM::Logic::Client

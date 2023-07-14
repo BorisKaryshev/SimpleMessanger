@@ -28,12 +28,11 @@ namespace SiM::Logic::Client {
         auto run() -> void;
 
      private:
-        auto m_sendLoginOnServer() -> void;
+        [[nodiscard]] auto m_sendLoginOnServer() -> std::string;
 
      private:
         boost::asio::io_context m_context;
         std::optional<Connection> m_connection;
-        std::atomic_bool m_isRunning;
 
         SiM::Logic::Client::Detail::ClientPrintAllMessages m_printer;
     };
