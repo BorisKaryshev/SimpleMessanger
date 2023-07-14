@@ -2,21 +2,11 @@
 #include "TCP.hpp"
 #include "detail/ClientLogic.hpp"
 
+#include "detail/AsyncPrint.hpp"
+
 #include <iostream>
 #include <string>
 #include <thread>
-
-namespace {
-
-    template <typename... Args>
-        requires requires(std::stringstream stream, Args... args) { (stream << ... << args); }
-    auto print(const Args&... args) -> void {
-        std::stringstream stream;
-        (stream << ... << args);
-        std::cout << stream.str();
-    }
-
-}  // namespace
 
 namespace SiM::Logic::Client {
 
@@ -26,6 +16,7 @@ namespace SiM::Logic::Client {
         sock.connect(endpoint);
 
         m_connection.emplace(Launch::RunManually, std::move(sock));
+        addListener(std::addressof(m_printer));
     }
 
     auto Client::send(const Message& message) -> void {
@@ -38,8 +29,14 @@ namespace SiM::Logic::Client {
     }
 
     auto Client::run() -> void {
-        std::jthread worker([this] { m_context.run(); });
         Detail::ClientCommandParser parser(*this);
+        m_connection->run();
+        std::jthread worker([this] {
+            print(std::cout, "Worker started\n");
+            m_context.run();
+            print(std::cout, "Worker ended\n");
+        });
+
         m_isRunning = true;
 
         m_sendLoginOnServer();
@@ -47,20 +44,19 @@ namespace SiM::Logic::Client {
         while (m_isRunning) {
             std::string command;
             std::getline(std::cin, command);
+            print(std::cout, "Parsing command |", command, "|\n");
             parser.parseCommand(command)->execute();
         }
     }
 
     auto Client::m_sendLoginOnServer() -> void {
-        constexpr char delimeter = ' ';
-
         std::string login;
-        print("Enter your login: ");
-        std::getline(std::cin, login, delimeter);
+        print(std::cout, "Enter your login: ");
+        std::getline(std::cin, login);
 
         while (login == Constants::serverName) {
-            print("\nError: your login should not be equal to '", Constants::serverName, "'. Try again: ");
-            std::getline(std::cin, login, delimeter);
+            print(std::cout, "\nError: your login should not be equal to '", Constants::serverName, "'. Try again: ");
+            std::getline(std::cin, login);
         }
 
         Message message(0, login, Constants::serverName.data(), "");

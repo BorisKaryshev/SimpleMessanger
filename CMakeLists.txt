@@ -39,6 +39,8 @@ set(source
     ${PROJECT_SOURCE_DIR}/src/Message.cpp
     ${PROJECT_SOURCE_DIR}/src/Executor.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/LowLevelMessage.cpp
+    ${PROJECT_SOURCE_DIR}/src/detail/ClientLogic.cpp
+    ${PROJECT_SOURCE_DIR}/src/detail/ClientCommands.cpp
     ${PROJECT_SOURCE_DIR}/src/logic/Client.cpp
 )
 

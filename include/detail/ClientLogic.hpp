@@ -3,23 +3,13 @@
 #include "Message.hpp"
 #include "Notifier.hpp"
 #include "detail/AsyncPrint.hpp"
-#include "logic/Client.hpp"
 #include "logic/Interfaces.hpp"
 
 namespace SiM::Logic::Client::Detail {
 
-    class SendMessageCommand final : public Interfaces::CommandBase {
+    class ClientPrintAllMessages final : public SiM::Notifier<SiM::Message>::Listener {
      public:
-        SendMessageCommand(Interfaces::AsioApplicationBase& application, Message message);
-        auto execute() -> void override;
-
-     private:
-        const Message m_messageToSend;
-    };
-
-    class CLientPrintAllMessages final : public SiM::Notifier<std::string>::Listener {
-     public:
-        auto notify(const std::string& serializedMessage) -> void override;
+        auto notify(const SiM::Message& serializedMessage) -> void override;
     };
 
     class ClientCommandParser final : public Interfaces::CommandParserBase {
