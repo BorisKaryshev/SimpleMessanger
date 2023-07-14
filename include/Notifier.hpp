@@ -17,6 +17,8 @@ namespace SiM {
         class Listener {
          public:
             virtual constexpr auto notify(const Args&... message) -> void = 0;
+
+            virtual ~Listener() = default;
         };
 
      public:
