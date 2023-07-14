@@ -39,11 +39,11 @@ set(source
     ${PROJECT_SOURCE_DIR}/src/Message.cpp
     ${PROJECT_SOURCE_DIR}/src/Executor.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/LowLevelMessage.cpp
+    ${PROJECT_SOURCE_DIR}/src/logic/Client.cpp
 )
 
 set(include_locations
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include/detail
 )
 
 set(includes 
@@ -53,8 +53,12 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/SincQueue.hpp
     ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
     ${PROJECT_SOURCE_DIR}/include/Notifier.hpp 
+
     ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
     ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
+
+    ${PROJECT_SOURCE_DIR}/include/logic/Interfaces.hpp  
+    ${PROJECT_SOURCE_DIR}/include/logic/ClientLogic.hpp
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)

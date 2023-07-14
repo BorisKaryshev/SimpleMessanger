@@ -1,7 +1,7 @@
-#include <iostream>
+#include "detail/LowLevelMessage.hpp"
+#include "logic/Client.hpp"
 
 [[nodiscard]] auto subMain() -> int {
-    std::cout << "Hello, world!!\n";
     return 0;
 }
 

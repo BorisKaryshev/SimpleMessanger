@@ -1,5 +1,5 @@
 #include "TCP.hpp"
-#include "LowLevelMessage.hpp"
+#include "detail/LowLevelMessage.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -21,12 +21,10 @@ namespace {
 namespace SiM {
 
     Connection::Connection(boost::asio::ip::tcp::socket sock) : m_sock(std::move(sock)), m_isRunning(false), m_acceptedMessage() {}
-    Connection::Connection([[maybe_unused]] Detail::RunAtConstruction_t /*unused*/, boost::asio::ip::tcp::socket sock)
-        : Connection(std::move(sock)) {
+    Connection::Connection([[maybe_unused]] Detail::RunAtConstruction_t /*unused*/, boost::asio::ip::tcp::socket sock) : Connection(std::move(sock)) {
         run();
     }
-    Connection::Connection([[maybe_unused]] Detail::RunManually_t /*unused*/, boost::asio::ip::tcp::socket sock)
-        : Connection(std::move(sock)) {}
+    Connection::Connection([[maybe_unused]] Detail::RunManually_t /*unused*/, boost::asio::ip::tcp::socket sock) : Connection(std::move(sock)) {}
 
     auto Connection::run() -> void {
         std::lock_guard lock(m_socketInteractionMutex);
