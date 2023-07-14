@@ -1,5 +1,5 @@
 #include "TCP.hpp"
-#include "LowLevelMessage.hpp"
+#include "detail/LowLevelMessage.hpp"
 
 #include <iomanip>
 #include <iostream>

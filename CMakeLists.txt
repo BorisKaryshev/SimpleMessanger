@@ -43,7 +43,6 @@ set(source
 
 set(include_locations
     ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/include/detail
 )
 
 set(includes 
@@ -55,6 +54,8 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/Notifier.hpp 
     ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
     ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
+    ${PROJECT_SOURCE_DIR}/include/logic/Interfaces.hpp  
+    
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
