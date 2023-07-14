@@ -7,9 +7,9 @@
 
 namespace SiM::Logic::Client::Detail {
 
-    class ClientPrintAllMessages final : public SiM::Notifier<SiM::Message>::Listener {
+    class ClientPrintAllMessages final : public SiM::Notifier<std::string>::Listener {
      public:
-        auto notify(const SiM::Message& serializedMessage) -> void override;
+        auto notify(const std::string& serializedMessage) -> void override;
     };
 
     class ClientCommandParser final : public Interfaces::CommandParserBase {

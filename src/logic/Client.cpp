@@ -16,7 +16,7 @@ namespace SiM::Logic::Client {
         sock.connect(endpoint);
 
         m_connection.emplace(Launch::RunManually, std::move(sock));
-        addListener(std::addressof(m_printer));
+        m_connection->addListener(std::addressof(m_printer));
     }
 
     auto Client::send(const Message& message) -> void {

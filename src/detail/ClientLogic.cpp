@@ -4,7 +4,8 @@
 
 namespace SiM::Logic::Client::Detail {
 
-    auto ClientPrintAllMessages::notify(const SiM::Message& message) -> void {
+    auto ClientPrintAllMessages::notify(const std::string& serializedMessage) -> void {
+        Message message(serializedMessage);
         print(std::cout, message.from(), ": ", message.text());
     }
 

@@ -18,7 +18,7 @@ namespace SiM {
 
 namespace SiM::Logic::Client {
 
-    class Client : public Interfaces::AsioApplicationBase, private SiM::Notifier<Message> {
+    class Client : public Interfaces::AsioApplicationBase {
      public:
         Client(boost::asio::ip::address address, unsigned short port);
 
