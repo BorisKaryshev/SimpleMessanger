@@ -6,6 +6,10 @@ namespace SiM::Logic::Server {
         : m_endpoint(boost::asio::ip::tcp::v4(), port), m_acceptor(m_context, m_endpoint), m_listener(*this), m_id(0){};
 
     auto Server::send(const Message& message) -> void {
+        if (message.to() == Logic::Constants::serverName) {
+            return;
+        }
+
         try {
             m_tableOfClients[message.to()].send(message.serialize());
         } catch (std::out_of_range& exception) {
