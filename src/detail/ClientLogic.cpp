@@ -1,4 +1,5 @@
 #include "detail/ClientLogic.hpp"
+#include "detail/AsyncPrint.hpp"
 #include "detail/ClientCommands.hpp"
 #include "logic/Client.hpp"
 
@@ -6,7 +7,7 @@ namespace SiM::Logic::Client::Detail {
 
     auto ClientPrintAllMessages::notify(const std::string& serializedMessage) -> void {
         Message message(serializedMessage);
-        print(std::cout, message.from(), ": ", message.text());
+        print(std::cout, "\n", message.from(), ": ", message.text(), "\n");
     }
 
     ClientCommandParser::ClientCommandParser(Interfaces::AsioApplicationBase& application)
