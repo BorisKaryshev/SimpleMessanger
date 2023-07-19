@@ -8,7 +8,11 @@ namespace SiM::Logic::Server::Detail {
 
     auto ResendingListener::notify(const std::string& serializedMessuage) -> void {
         Message message(serializedMessuage);
-        m_server.send(message);
+
+        std::cout << "Got message from '" << message.from() << "' to '" << message.to() << "' :" << message.text() << "'\n";
+        if (message.to() != Logic::Constants::serverName) {
+            m_server.send(message);
+        }
     }
 
 }  // namespace SiM::Logic::Server::Detail

@@ -8,9 +8,9 @@ namespace SiM::Logic::Server::Detail {
 
         m_unauthorizedConnections.emplace_front(std::make_unique<SiM::Connection>(SiM::Launch::RunManually, std::move(sock)));
         ConnectionPtr& emplacedConnection = m_unauthorizedConnections.front();
-        m_loginListeners.push_front(LoginListener(emplacedConnection, m_connection, m_unauthorizedConnections, m_modificationMutex));
 
-        emplacedConnection->addListener(&m_loginListeners.front());
+        auto& listener = m_loginListeners.emplace_front(emplacedConnection, m_connection, m_unauthorizedConnections, m_modificationMutex);
+        emplacedConnection->addListener(std::addressof(listener));
         if (m_isRunning) {
             emplacedConnection->run();
         }
@@ -18,11 +18,11 @@ namespace SiM::Logic::Server::Detail {
     }
 
     auto ClientsTable::runAll() -> void {
+        m_isRunning = true;
         auto run = [](Connection& connection) { connection.run(); };
 
         std::lock_guard lock(m_modificationMutex);
 
-        m_isRunning = true;
         std::ranges::for_each(m_unauthorizedConnections, run, &std::unique_ptr<SiM::Connection>::operator*);
         std::ranges::for_each(m_connection | std::views::values, run, &std::unique_ptr<SiM::Connection>::operator*);
     }
@@ -31,6 +31,7 @@ namespace SiM::Logic::Server::Detail {
         m_isRunning = false;
         auto close = [](SiM::Connection& connection) { connection.close(); };
 
+        std::lock_guard lock(m_modificationMutex);
         std::ranges::for_each(m_unauthorizedConnections, close, &ConnectionPtr::operator*);
         std::ranges::for_each(m_connection | std::views::values, close, &ConnectionPtr::operator*);
     }

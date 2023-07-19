@@ -6,9 +6,7 @@ namespace SiM::Logic::Server {
         : m_endpoint(boost::asio::ip::tcp::v4(), port), m_acceptor(m_context, m_endpoint), m_listener(*this), m_id(0){};
 
     auto Server::send(const Message& message) -> void {
-        if (message.to() == Logic::Constants::serverName) {
-            return;
-        }
+        std::cout << "Sending message from '" << message.from() << "' to '" << message.to() << "' : '" << message.text() << "'\n";
 
         try {
             m_tableOfClients[message.to()].send(message.serialize());
@@ -39,7 +37,7 @@ namespace SiM::Logic::Server {
         auto handler = [this](const boost::system::error_code& errorCode, boost::asio::ip::tcp::socket sock) {
             if (!errorCode) {
                 auto& connection = m_tableOfClients.emplace(std::move(sock));
-                connection.addListener(&m_listener);
+                connection.addListener(std::addressof(m_listener));
             }
             m_accept();
         };

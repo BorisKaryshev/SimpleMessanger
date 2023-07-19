@@ -15,7 +15,6 @@ namespace SiM::Logic::Server::Detail {
      *
      * @todo Make thread safe
      */
-
     class ResendingListener final : public SiM::Notifier<std::string>::Listener {
      public:
         ResendingListener(Server& server);

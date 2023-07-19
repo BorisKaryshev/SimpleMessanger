@@ -41,7 +41,7 @@ set(source
 
     ${PROJECT_SOURCE_DIR}/src/detail/LowLevelMessage.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/ClientsTable.cpp  
-    ${PROJECT_SOURCE_DIR}/src/detail/LogicListener.cpp
+    ${PROJECT_SOURCE_DIR}/src/detail/LoginListener.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/ResendingListener.cpp
     
     ${PROJECT_SOURCE_DIR}/src/logic/Server.cpp
@@ -62,7 +62,8 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
     ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/ClientsTable.hpp  
-    ${PROJECT_SOURCE_DIR}/include/detail/LogicListener.hpp  
+    ${PROJECT_SOURCE_DIR}/include/detail/LoginListener.hpp  
+    ${PROJECT_SOURCE_DIR}/include/detail/ResendingListener.hpp  
 
     ${PROJECT_SOURCE_DIR}/include/logic/Interfaces.hpp  
     ${PROJECT_SOURCE_DIR}/include/logic/Server.hpp  
@@ -98,8 +99,8 @@ target_compile_options(exe PUBLIC -pthread)
 target_compile_options(${project_name}_lib PUBLIC -pthread)
 
 if(${BUILD_MODE} STREQUAL "DEBUG")
-    target_compile_options(exe PRIVATE  -g -O0)
-    target_compile_options(${project_name}_lib PRIVATE  -g -O0)
+    target_compile_options(exe PRIVATE  -g3 -O0)
+    target_compile_options(${project_name}_lib PRIVATE  -g3 -O0)
 elseif(${BUILD_MODE} STREQUAL "RELEASE")
     target_compile_options(exe PRIVATE  -O2)
     target_compile_options(${project_name}_lib PRIVATE  -O2)
