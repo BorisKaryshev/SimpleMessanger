@@ -6,6 +6,10 @@
 #include <mutex>
 #include <ranges>
 
+#include <iostream>
+#include <sstream>
+#include <thread>
+
 namespace SiM {
 
     /**
@@ -19,6 +23,7 @@ namespace SiM {
             virtual constexpr auto notify(const Args&... message) -> void = 0;
 
             virtual ~Listener() = default;
+
         };
 
      public:
@@ -39,17 +44,18 @@ namespace SiM {
      protected:
         auto notifyAll(Args... args) -> void {
             std::lock_guard lock(m_listenersContainerModification);
-            std::ranges::for_each(
-                m_listeners, [... args = std::move(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
+            std::ranges::for_each(m_listeners, [... args = static_cast<Args&&>(args)](typename Notifier<Args...>::Listener* listener) {
+                listener->notify(args...);
+            });
         }
 
         template <typename Pred>
             requires std::is_invocable_r_v<bool, Pred, typename Notifier<Args...>::Listener*>
-        auto notifyAllIf(Pred&& pred, Args... args) -> void {
+        auto notifyAllIf(Pred&& pred, const Args&... args) -> void {
             std::lock_guard lock(m_listenersContainerModification);
             std::ranges::for_each(
                 m_listeners | std::views::filter(pred),
-                [... args = std::move(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
+                [... args = static_cast<const Args&>(args)](typename Notifier<Args...>::Listener* listener) { listener->notify(args...); });
         }
 
      private:
