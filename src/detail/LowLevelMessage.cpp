@@ -1,4 +1,4 @@
-#include "LowLevelMessage.hpp"
+#include "detail/LowLevelMessage.hpp"
 
 namespace SiM::Detail {
 

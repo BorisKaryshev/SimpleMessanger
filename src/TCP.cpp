@@ -1,22 +1,12 @@
 #include "TCP.hpp"
-#include "LowLevelMessage.hpp"
+#include "detail/AsyncPrint.hpp"
+#include "detail/LowLevelMessage.hpp"
 
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
 using SiM::Detail::Message;
-
-namespace {
-
-    template <typename... Args>
-    auto print(const Args&... args) -> void {
-        std::stringstream stream;
-        (stream << ... << args);
-        std::cout << stream.str();
-    }
-
-}  // namespace
 
 namespace SiM {
 

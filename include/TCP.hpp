@@ -1,8 +1,8 @@
 #pragma once
 
-#include "LaunchMode.hpp"
-#include "LowLevelMessage.hpp"
 #include "Notifier.hpp"
+#include "detail/LaunchMode.hpp"
+#include "detail/LowLevelMessage.hpp"
 
 #include <boost/asio.hpp>
 
