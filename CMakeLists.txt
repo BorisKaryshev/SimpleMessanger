@@ -91,14 +91,20 @@ set(libs
     Boost::serialization
 )
 
-add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
-add_custom_target(EXE_TARGET DEPENDS exe)
-
 add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(${project_name}_lib ${libs})
-target_link_libraries(exe ${project_name}_lib)
+
+if(BUILD_CLIENT)
+    add_executable(client ${PROJECT_SOURCE_DIR}/src/client.cpp)
+    target_link_libraries(client ${project_name}_lib)
+    add_custom_target(CLIENT DEPENDS client)
+endif()
+if(BUILD_SERVER)
+    add_executable(server ${PROJECT_SOURCE_DIR}/src/server.cpp)
+    target_link_libraries(server ${project_name}_lib)
+    add_custom_target(SERVER DEPENDS server)
+endif()
 
 target_compile_options(exe PRIVATE -Wall -Wextra -Werror -Wpedantic -pthread)
 target_compile_options(${project_name}_lib PRIVATE  -Wall -Wextra -Werror -Wpedantic -pthread)
