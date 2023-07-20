@@ -10,7 +10,7 @@ namespace SiM::Logic::Server::Detail {
             return std::make_shared<Commands::Detail::StopServerCommand>(m_application);
         }
 
-        return std::make_shared<Interfaces::CommandBase>(m_application);
+        return std::make_shared<Commands::Detail::UnparsedCommand>(m_application);
     }
 
 };  // namespace SiM::Logic::Server::Detail
