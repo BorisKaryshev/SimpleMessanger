@@ -44,9 +44,13 @@ set(source
     ${PROJECT_SOURCE_DIR}/src/detail/LoginListener.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/ResendingListener.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/ServerCommandParser.cpp
+    ${PROJECT_SOURCE_DIR}/src/detail/ClientLogic.cpp
+    ${PROJECT_SOURCE_DIR}/src/detail/ClientCommands.cpp
     
     ${PROJECT_SOURCE_DIR}/src/logic/Server.cpp
     ${PROJECT_SOURCE_DIR}/src/logic/ServerCommands.cpp
+    ${PROJECT_SOURCE_DIR}/src/logic/Client.cpp
+
 )
 
 set(include_locations
@@ -61,17 +65,17 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/SincQueue.inl
     ${PROJECT_SOURCE_DIR}/include/Notifier.hpp 
     
-    ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
-    ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/ClientsTable.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/LoginListener.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/ResendingListener.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/ServerCommandParser.hpp  
+    ${PROJECT_SOURCE_DIR}/include/detail/LowLevelMessage.hpp
+    ${PROJECT_SOURCE_DIR}/include/detail/LaunchMode.hpp  
 
     ${PROJECT_SOURCE_DIR}/include/logic/Interfaces.hpp  
     ${PROJECT_SOURCE_DIR}/include/logic/Server.hpp  
     ${PROJECT_SOURCE_DIR}/include/logic/ServerCommands.hpp  
-    
+    ${PROJECT_SOURCE_DIR}/include/logic/Client.hpp
 )
 
 set(tests_folder ${PROJECT_SOURCE_DIR}/tests)
