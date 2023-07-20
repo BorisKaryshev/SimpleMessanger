@@ -1,4 +1,5 @@
 #include "logic/Server.hpp"
+#include "detail/ServerCommandParser.hpp"
 
 namespace SiM::Logic::Server {
 
@@ -17,20 +18,31 @@ namespace SiM::Logic::Server {
         }
     };
 
-    auto Server::run(std::size_t numOfWorkerThread) -> void {
+    auto Server::run([[maybe_unused]] std::size_t numOfWorkerThread) -> void {
         m_accept();
         m_tableOfClients.runAll();
 
-        std::list<std::jthread> workers;
-        auto workerFunction = [this] { m_context.run(); };
-        for ([[maybe_unused]] auto i : std::views::iota(0) | std::views::take(numOfWorkerThread)) {
-            workers.emplace_front(workerFunction);
+        std::forward_list<std::jthread> workers;
+        for ([[maybe_unused]] auto i : std::views::iota(0, numOfWorkerThread)) {
+            workers.emplace_front([this] { m_context.run(); });
+        }
+
+        m_isRunning = true;
+
+        Detail::ServerCommandParser commandParser(*this);
+
+        while (m_isRunning) {
+            std::string command;
+            std::getline(std::cin, command);
+
+            commandParser.parseCommand(command)->execute();
         }
     }
 
     auto Server::stop() -> void {
         m_acceptor.close();
         m_tableOfClients.stopAll();
+        m_isRunning = false;
     };
 
     auto Server::m_accept() -> void {
@@ -38,8 +50,9 @@ namespace SiM::Logic::Server {
             if (!errorCode) {
                 auto& connection = m_tableOfClients.emplace(std::move(sock));
                 connection.addListener(std::addressof(m_listener));
+
+                m_accept();
             }
-            m_accept();
         };
         m_acceptor.async_accept(handler);
     }

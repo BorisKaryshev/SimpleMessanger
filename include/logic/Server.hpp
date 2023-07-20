@@ -32,11 +32,13 @@ namespace SiM::Logic::Server {
 
      private:
         boost::asio::io_context m_context;
-
         boost::asio::ip::tcp::endpoint m_endpoint;
         boost::asio::ip::tcp::acceptor m_acceptor;
+
         Detail::ClientsTable m_tableOfClients;
         Detail::ResendingListener m_listener;
+
+        std::atomic_bool m_isRunning;
 
         Message::IdType m_id;
     };

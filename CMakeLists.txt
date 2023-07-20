@@ -43,8 +43,10 @@ set(source
     ${PROJECT_SOURCE_DIR}/src/detail/ClientsTable.cpp  
     ${PROJECT_SOURCE_DIR}/src/detail/LoginListener.cpp
     ${PROJECT_SOURCE_DIR}/src/detail/ResendingListener.cpp
+    ${PROJECT_SOURCE_DIR}/src/detail/ServerCommandParser.cpp
     
     ${PROJECT_SOURCE_DIR}/src/logic/Server.cpp
+    ${PROJECT_SOURCE_DIR}/src/logic/ServerCommands.cpp
 )
 
 set(include_locations
@@ -64,9 +66,11 @@ set(includes
     ${PROJECT_SOURCE_DIR}/include/detail/ClientsTable.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/LoginListener.hpp  
     ${PROJECT_SOURCE_DIR}/include/detail/ResendingListener.hpp  
+    ${PROJECT_SOURCE_DIR}/include/detail/ServerCommandParser.hpp  
 
     ${PROJECT_SOURCE_DIR}/include/logic/Interfaces.hpp  
     ${PROJECT_SOURCE_DIR}/include/logic/Server.hpp  
+    ${PROJECT_SOURCE_DIR}/include/logic/ServerCommands.hpp  
     
 )
 

@@ -24,7 +24,7 @@ namespace SiM::Logic::Interfaces {
         CommandBase(AsioApplicationBase& application) : m_application(application) {}
         CommandBase(const CommandBase& other) : CommandBase(other.m_application) {}
 
-        virtual auto execute() -> void = 0;
+        virtual auto execute() -> void{};
         virtual ~CommandBase() = default;
 
      protected:
