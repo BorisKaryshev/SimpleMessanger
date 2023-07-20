@@ -23,7 +23,7 @@ namespace SiM::Logic::Server {
         m_tableOfClients.runAll();
 
         std::forward_list<std::jthread> workers;
-        for ([[maybe_unused]] auto i : std::views::iota(0, numOfWorkerThread)) {
+        for ([[maybe_unused]] auto i : std::views::iota(0) | std::views::take(numOfWorkerThread)) {
             workers.emplace_front([this] { m_context.run(); });
         }
 

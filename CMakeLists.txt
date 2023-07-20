@@ -91,17 +91,9 @@ set(libs
     Boost::serialization
 )
 
-
-
-
-add_executable(exe ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
-add_custom_target(EXE_TARGET DEPENDS exe)
-
 add_library(${project_name}_lib STATIC ${source})
 target_include_directories(${project_name}_lib PUBLIC ${include_locations})
 target_link_libraries(${project_name}_lib ${libs})
-target_link_libraries(exe ${project_name}_lib)
 
 if(BUILD_CLIENT)
     add_executable(client ${PROJECT_SOURCE_DIR}/src/client.cpp)
