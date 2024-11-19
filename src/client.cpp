@@ -1,7 +1,5 @@
 #include "logic/Client.hpp"
 
-// update
-
 namespace {
 
     constexpr std::size_t AddressPositionInArguments = 1;
